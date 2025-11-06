@@ -1,268 +1,353 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-12 px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
 
     {{-- En-tête --}}
-    <div class="max-w-4xl mx-auto text-center mb-10 animate-fadeInSlow">
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900">Déclarer un problème</h1>
-        <p class="mt-2 text-gray-600 text-sm sm:text-base">Choisissez la forme de déclaration et remplissez les informations ci-dessous.</p>
+    <div class="max-w-4xl mx-auto text-center mb-12 animate-fadeInSlow">
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-gray-800 tracking-tight">
+            Déclarer un Problème <span class="text-indigo-600">Rapide</span>
+        </h1>
+        <p class="mt-4 text-gray-500 text-base sm:text-lg max-w-2xl mx-auto">
+            Sélectionnez la forme de déclaration et fournissez les détails requis ci-dessous.
+        </p>
     </div>
 
     {{-- Sélecteur de mode --}}
-    <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-10 animate-fadeInUp">
+    <div class="flex flex-col sm:flex-row justify-center items-center gap-6 mb-16 animate-fadeInUp">
         <button id="btnUrgence"
-            class="px-8 py-3 rounded-xl bg-red-600 text-white font-semibold shadow-lg hover:bg-red-700 hover:scale-105 active:scale-95 transition-all duration-300">
-            🔴 Forme 1 : Urgence
+            class="mode-btn px-8 py-4 rounded-xl font-bold shadow-lg transition-all duration-300 transform border-2 border-transparent text-white bg-red-600 hover:bg-red-700 hover:scale-[1.03] active:scale-[0.98]"
+            data-mode="1">
+            🚨 Forme 1 : Urgence Immédiate
         </button>
         <button id="btnSuivi"
-            class="px-8 py-3 rounded-xl bg-green-600 text-white font-semibold shadow-lg hover:bg-green-700 hover:scale-105 active:scale-95 transition-all duration-300">
-            🟢 Forme 2 : Avec suivi
+            class="mode-btn px-8 py-4 rounded-xl font-bold shadow-lg transition-all duration-300 transform border-2 border-indigo-500 text-indigo-600 bg-white hover:bg-indigo-50 hover:scale-[1.03] active:scale-[0.98] active-mode"
+            data-mode="0">
+            ✅ Forme 2 : Avec Suivi et Détails
         </button>
     </div>
 
     {{-- Conteneur principal --}}
     <div id="formContainer"
-        class="max-w-3xl mx-auto bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8 transition-all duration-500 transform hover:shadow-2xl hover:scale-[1.01]">
+        class="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl p-8 sm:p-10 lg:p-12 transition-all duration-500 transform border border-gray-200">
 
         {{-- Message succès --}}
         @if (session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4 animate-fadeIn">
-                ✅ {{ session('success') }}
+            <div class="bg-green-50 border-l-4 border-green-400 text-green-700 p-5 mb-8 rounded-xl animate-fadeIn">
+                <p class="font-medium">✅ Succès :</p>
+                <p class="mt-2 text-sm">{{ session('success') }}</p>
             </div>
         @endif
 
-        {{-- Formulaire --}}
-        <form action="{{ route('declarations.store') }}" method="POST" enctype="multipart/form-data" id="declarationForm" class="space-y-6">
+        {{-- Formulaire avec espacement augmenté --}}
+        <form action="{{ route('declarations.store') }}" method="POST" enctype="multipart/form-data" id="declarationForm" class="space-y-12">
             @csrf
             <input type="hidden" name="urgence" id="urgence" value="0">
 
-            {{-- Type --}}
-            <div>
-                <label class="block text-gray-700 font-semibold mb-2">Type de déclaration</label>
-                <select name="type" id="type"
-                    class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-500 transition">
-                    <option value="">-- Sélectionnez --</option>
-                    <option value="incendie">Incendie</option>
-                    <option value="accident">Accident</option>
-                    <option value="vol">Vol</option>
-                    <option value="incident_sanitaire">Incident sanitaire</option>
-                    <option value="infrastructure_endommagee">Infrastructure endommagée</option>
-                    <option value="autre">Autre</option>
-                </select>
-            </div>
+            {{-- Section Détails du Problème --}}
+            <div class="space-y-8 bg-gray-50 p-8 rounded-2xl border border-gray-100">
+                <h2 class="text-2xl font-bold text-gray-700 border-b-2 border-gray-200 pb-4 mb-6 flex items-center">
+                    📝 Détails de l'incident
+                </h2>
 
-            {{-- Type personnalisé --}}
-            <div class="hidden" id="autreTypeContainer">
-                <label class="block text-gray-700 font-semibold mb-2">Précisez le type</label>
-                <input type="text" name="autre_type"
-                    class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-500 transition"
-                    placeholder="Ex : problème d’eau">
-            </div>
-
-            {{-- Description --}}
-            <div>
-                <label class="block text-gray-700 font-semibold mb-2">Description</label>
-                <textarea name="description" rows="4"
-                    class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-500 transition"
-                    placeholder="Décrivez le problème rencontré..." required></textarea>
-            </div>
-
-            {{-- Fichiers --}}
-            <div class="grid sm:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-gray-700 font-semibold mb-2">Images (max 50 Mo)</label>
-                    <input type="file" name="images[]" multiple accept="image/*"
-                        class="block w-full text-gray-700 border rounded-lg p-2 file:mr-3 file:px-3 file:py-2 file:rounded-md file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 transition">
+                {{-- Type --}}
+                <div class="space-y-3">
+                    <label for="type" class="block text-base font-semibold text-gray-700">Type de déclaration <span class="text-red-500">*</span></label>
+                    <select name="type" id="type" required
+                        class="w-full rounded-xl border-gray-300 text-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all shadow-sm p-4 border-2">
+                        <option value="">-- Sélectionnez un type d'incident --</option>
+                        <option value="incendie">🔥 Incendie</option>
+                        <option value="accident">🚗 Accident de la route</option>
+                        <option value="vol">🔪 Vol / Effraction</option>
+                        <option value="incident_sanitaire">💊 Incident sanitaire</option>
+                        <option value="infrastructure_endommagee">🚧 Infrastructure endommagée</option>
+                        <option value="autre">... Autre (à préciser)</option>
+                    </select>
                 </div>
-                <div>
-                    <label class="block text-gray-700 font-semibold mb-2">Vidéos (max 50 Mo)</label>
-                    <input type="file" name="videos[]" multiple accept="video/*"
-                        class="block w-full text-gray-700 border rounded-lg p-2 file:mr-3 file:px-3 file:py-2 file:rounded-md file:border-0 file:bg-green-600 file:text-white hover:file:bg-green-700 transition">
+
+                {{-- Type personnalisé --}}
+                <div class="hidden transition-all duration-300 ease-in-out space-y-3" id="autreTypeContainer">
+                    <label for="autre_type" class="block text-base font-semibold text-gray-700">Précisez le type (si "Autre" sélectionné)</label>
+                    <input type="text" name="autre_type" id="autre_type"
+                        class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all shadow-sm p-4 border-2"
+                        placeholder="Ex : Problème d'eau potable / Panne d'électricité">
+                </div>
+
+                {{-- Description --}}
+                <div class="space-y-3">
+                    <label for="description" class="block text-base font-semibold text-gray-700">Description complète <span class="text-red-500">*</span></label>
+                    <textarea name="description" id="description" rows="6" required
+                        class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all shadow-sm p-4 border-2"
+                        placeholder="Décrivez précisément ce qui s'est passé, où et quand..."></textarea>
                 </div>
             </div>
 
-            {{-- Localisation --}}
-            <h2 class="text-xl font-bold text-gray-800 mt-8 mb-3 border-b pb-1">📍 Localisation</h2>
+            {{-- Section Pièces Jointes --}}
+            <div class="space-y-8 bg-gray-50 p-8 rounded-2xl border border-gray-100">
+                <h2 class="text-2xl font-bold text-gray-700 border-b-2 border-gray-200 pb-4 mb-6 flex items-center">
+                    📸 Pièces Jointes (Optionnel)
+                </h2>
+                <p class="text-base text-gray-600 mb-6">Aidez-nous à mieux comprendre en ajoutant des images ou vidéos (max 50 Mo par fichier).</p>
 
-            {{-- Choix mode localisation --}}
-            <div class="flex flex-col sm:flex-row gap-4 mb-4">
-                <label class="flex items-center space-x-2">
-                    <input type="radio" name="localisation_option" value="manuelle" checked class="text-indigo-600 focus:ring-indigo-500">
-                    <span class="text-gray-700">Saisir manuellement</span>
-                </label>
-                <label class="flex items-center space-x-2">
-                    <input type="radio" name="localisation_option" value="auto" class="text-indigo-600 focus:ring-indigo-500">
-                    <span class="text-gray-700">Localisation automatique</span>
-                </label>
-            </div>
-
-            {{-- Localisation manuelle --}}
-            <div id="localisationManuelle" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-gray-700">Département</label>
-                        <select name="departement_id" id="departement" class="w-full mt-1 rounded-lg border-gray-300">
-                            <option value="">-- Sélectionnez --</option>
-                            @foreach($departements as $dep)
-                                <option value="{{ $dep->id }}">{{ $dep->name }}</option>
-                            @endforeach
-                        </select>
+                <div class="grid sm:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <label for="images" class="block text-base font-semibold text-gray-700">Images (Photos)</label>
+                        <input type="file" name="images[]" multiple accept="image/*" id="images"
+                            class="block w-full text-gray-700 border-2 border-gray-300 rounded-xl p-4 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-base file:font-semibold file:bg-indigo-500 file:text-white hover:file:bg-indigo-600 transition-all duration-200">
                     </div>
-                    <div>
-                        <label class="block text-gray-700">Commune</label>
-                        <select name="commune_id" id="commune" class="w-full mt-1 rounded-lg border-gray-300" disabled>
-                            <option value="">-- Choisir un département --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700">Arrondissement</label>
-                        <select name="arrondissement_id" id="arrondissement" class="w-full mt-1 rounded-lg border-gray-300" disabled>
-                            <option value="">-- Choisir une commune --</option>
-                        </select>
+                    <div class="space-y-3">
+                        <label for="videos" class="block text-base font-semibold text-gray-700">Vidéos (Clips)</label>
+                        <input type="file" name="videos[]" multiple accept="video/*" id="videos"
+                            class="block w-full text-gray-700 border-2 border-gray-300 rounded-xl p-4 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-base file:font-semibold file:bg-green-500 file:text-white hover:file:bg-green-600 transition-all duration-200">
                     </div>
                 </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <input type="text" name="quartier" placeholder="Quartier" class="rounded-lg border-gray-300">
-                    <input type="text" name="rue" placeholder="Rue" class="rounded-lg border-gray-300">
-                    <input type="text" name="maison" placeholder="Maison" class="rounded-lg border-gray-300">
-                </div>
             </div>
 
-            {{-- Localisation auto --}}
-            <div id="localisationAuto" class="hidden mb-4 space-y-3">
-                <button type="button" id="btnGeo"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all">
-                    Activer la géolocalisation
-                </button>
-                <input type="hidden" name="latitude" id="latitude">
-                <input type="hidden" name="longitude" id="longitude">
-                <div id="map" class="mt-3 w-full h-64 rounded-lg border"></div>
+            {{-- Section Localisation --}}
+            <div class="space-y-8 bg-gray-50 p-8 rounded-2xl border border-gray-100">
+                <h2 class="text-2xl font-bold text-gray-700 border-b-2 border-gray-200 pb-4 mb-6 flex items-center">
+                    📍 Localisation du Problème
+                </h2>
+
+                {{-- Choix mode localisation --}}
+                <div class="flex flex-col sm:flex-row gap-8 mb-6 p-4 bg-white rounded-xl border border-gray-200">
+                    <label class="flex items-center space-x-4 cursor-pointer p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                        <input type="radio" name="localisation_option" value="manuelle" checked
+                            class="h-5 w-5 text-indigo-600 focus:ring-2 focus:ring-indigo-200 border-gray-300 rounded">
+                        <span class="text-gray-700 font-semibold">Saisir l'adresse complète</span>
+                    </label>
+                    <br>
+                    <label class="flex items-center space-x-4 cursor-pointer p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                        <input type="radio" name="localisation_option" value="auto"
+                            class="h-5 w-5 text-indigo-600 focus:ring-2 focus:ring-indigo-200 border-gray-300 rounded">
+                        <span class="text-gray-700 font-semibold">Utiliser la géolocalisation automatique</span>
+                    </label>
+                </div>
+
+                {{-- Localisation manuelle --}}
+                <div id="localisationManuelle" class="space-y-8 transition-all duration-300 ease-in-out">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {{-- Département --}}
+                        <div class="space-y-3">
+                            <label for="departement" class="block text-base font-semibold text-gray-700">Département <span class="text-red-500">*</span></label>
+                            <select name="departement_id" id="departement" required class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4">
+                                <option value="">-- Sélectionnez --</option>
+                                @foreach($departements as $dep)
+                                    <option value="{{ $dep->id }}">{{ $dep->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        {{-- Commune --}}
+                        <div class="space-y-3">
+                            <label for="commune" class="block text-base font-semibold text-gray-700">Commune <span class="text-red-500">*</span></label>
+                            <select name="commune_id" id="commune" required class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4" disabled>
+                                <option value="">-- Choisir un département --</option>
+                            </select>
+                        </div>
+                        {{-- Arrondissement --}}
+                        <div class="space-y-3">
+                            <label for="arrondissement" class="block text-base font-semibold text-gray-700">Arrondissement</label>
+                            <select name="arrondissement_id" id="arrondissement" class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4" disabled>
+                                <option value="">-- Choisir une commune --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <div class="space-y-3">
+                            <input type="text" name="quartier" placeholder="Quartier / Village" 
+                                class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4">
+                        </div>
+                        <div class="space-y-3">
+                            <input type="text" name="rue" placeholder="Rue / Lieu-dit" 
+                                class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4">
+                        </div>
+                        <div class="space-y-3">
+                            <input type="text" name="maison" placeholder="Numéro Maison / Référence" 
+                                class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Localisation auto --}}
+                <div id="localisationAuto" class="hidden transition-all duration-300 ease-in-out space-y-6">
+                    <div class="space-y-3">
+                        <button type="button" id="btnGeo"
+                            class="px-8 py-4 bg-blue-600 text-white rounded-xl font-semibold shadow-lg hover:bg-blue-700 transition-all transform hover:scale-[1.03] active:scale-[0.98] flex items-center gap-3">
+                            <span>🌐</span>
+                            <span>Activer la géolocalisation</span>
+                        </button>
+                    </div>
+                    <input type="hidden" name="latitude" id="latitude">
+                    <input type="hidden" name="longitude" id="longitude">
+                    <div class="space-y-3">
+                        <div id="map" class="w-full h-80 rounded-2xl shadow-lg border-2 border-gray-300 transition-all duration-500 ease-in-out"></div>
+                    </div>
+                </div>
             </div>
 
             {{-- Soumission --}}
-            <div class="text-center pt-4">
+            <div class="text-center pt-8">
                 <button type="submit"
-                    class="px-10 py-3 bg-indigo-600 text-white rounded-xl font-semibold shadow hover:bg-indigo-700 transform hover:scale-105 transition-all duration-300">
-                    Soumettre la déclaration
+                    class="w-full sm:w-auto px-14 py-5 bg-indigo-600 text-white rounded-xl text-lg font-bold shadow-xl hover:bg-indigo-700 transform hover:scale-[1.02] transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50">
+                    🚀 Soumettre la Déclaration
                 </button>
             </div>
         </form>
     </div>
 </div>
 
-{{-- Scripts --}}
-{{-- Scripts --}}
+{{-- Scripts (inchangés) --}}
 <script>
-    // Animation champ "autre"
-    const typeSelect = document.getElementById('type');
-    const autreTypeContainer = document.getElementById('autreTypeContainer');
-    typeSelect.addEventListener('change', () => {
-        autreTypeContainer.classList.toggle('hidden', typeSelect.value !== 'autre');
-    });
-
-    // Boutons mode
-    const btnUrgence = document.getElementById('btnUrgence');
-    const btnSuivi = document.getElementById('btnSuivi');
-    const urgenceInput = document.getElementById('urgence');
-    btnUrgence.onclick = () => { urgenceInput.value = 1; alert("Mode urgence activé !"); };
-    btnSuivi.onclick = () => { urgenceInput.value = 0; alert("Mode avec suivi activé !"); };
-
-    // Localisation manuelle/auto
-    const localisationRadios = document.getElementsByName('localisation_option');
-    const locManuelle = document.getElementById('localisationManuelle');
-    const locAuto = document.getElementById('localisationAuto');
-    const btnGeo = document.getElementById('btnGeo');
-    localisationRadios.forEach(radio => {
-        radio.addEventListener('change', () => {
-            locAuto.classList.toggle('hidden', radio.value !== 'auto' || !radio.checked);
-            locManuelle.classList.toggle('hidden', radio.value === 'auto' && radio.checked);
-        });
-    });
-
-    // Fonction d'initialisation Leaflet
-    let map, marker;
-    function initLeaflet(lat, lon) {
-        if (!map) {
-            map = L.map('map').setView([lat, lon], 15);
-
-            // Couche de carte OpenStreetMap
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-            // Marqueur
-            marker = L.marker([lat, lon], { draggable: true })
-                .addTo(map)
-                .bindPopup('Votre position actuelle')
-                .openPopup();
-
-            // Quand le marqueur est déplacé, met à jour les coordonnées cachées
-            marker.on('moveend', e => {
-                const { lat, lng } = e.target.getLatLng();
-                document.getElementById('latitude').value = lat;
-                document.getElementById('longitude').value = lng;
-            });
-        } else {
-            map.setView([lat, lon], 15);
-            marker.setLatLng([lat, lon]);
-        }
-    }
-
-    // Bouton de géolocalisation
-    btnGeo.addEventListener('click', () => {
-        if (navigator.geolocation) {
-            btnGeo.textContent = "Chargement...";
-            navigator.geolocation.getCurrentPosition(pos => {
-                const lat = pos.coords.latitude;
-                const lon = pos.coords.longitude;
-                document.getElementById('latitude').value = lat;
-                document.getElementById('longitude').value = lon;
-                initLeaflet(lat, lon);
-                btnGeo.textContent = "Position détectée ✅";
-            }, () => {
-                alert("Impossible d’obtenir votre position.");
-                btnGeo.textContent = "Réessayer";
-            });
-        } else {
-            alert("La géolocalisation n’est pas supportée par ce navigateur.");
-        }
-    });
-
-    // AJAX Départements / Communes / Arrondissements
+    // Initialisation du mode Urgence (Forme 2 par défaut)
     document.addEventListener('DOMContentLoaded', () => {
+        const btnUrgence = document.getElementById('btnUrgence');
+        const btnSuivi = document.getElementById('btnSuivi');
+        const urgenceInput = document.getElementById('urgence');
+        const allModeBtns = document.querySelectorAll('.mode-btn');
+
+        // Fonction pour mettre à jour le style des boutons
+        const updateModeStyle = (mode) => {
+            allModeBtns.forEach(btn => {
+                const isSelected = btn.getAttribute('data-mode') === mode.toString();
+                btn.classList.remove('active-mode', 'bg-red-600', 'hover:bg-red-700', 'text-white', 'border-indigo-500', 'text-indigo-600', 'bg-white', 'hover:bg-indigo-50');
+
+                if (isSelected && mode === 1) {
+                    // Style pour Urgence
+                    btn.classList.add('bg-red-600', 'hover:bg-red-700', 'text-white', 'border-transparent', 'active-mode');
+                } else if (isSelected && mode === 0) {
+                    // Style pour Suivi
+                    btn.classList.add('border-2', 'border-indigo-500', 'text-indigo-600', 'bg-white', 'hover:bg-indigo-50', 'active-mode');
+                } else if (mode === 1) {
+                    // Style pour Suivi quand Urgence est actif
+                    btnSuivi.classList.add('border-2', 'border-gray-300', 'text-gray-500', 'bg-white', 'hover:bg-gray-100');
+                } else if (mode === 0) {
+                    // Style pour Urgence quand Suivi est actif
+                    btnUrgence.classList.add('border-2', 'border-gray-300', 'text-gray-500', 'bg-white', 'hover:bg-gray-100');
+                }
+            });
+        };
+        
+        // Initialiser avec le mode Suivi (0) par défaut
+        updateModeStyle(0); 
+
+        // Gestion du clic des boutons
+        btnUrgence.onclick = () => {
+            urgenceInput.value = 1;
+            updateModeStyle(1);
+            alert("Mode Urgence Immédiate activé ! Votre déclaration sera traitée en priorité.");
+        };
+        btnSuivi.onclick = () => {
+            urgenceInput.value = 0;
+            updateModeStyle(0);
+            alert("Mode Avec Suivi et Détails activé !");
+        };
+
+        // Animation champ "autre"
+        const typeSelect = document.getElementById('type');
+        const autreTypeContainer = document.getElementById('autreTypeContainer');
+        typeSelect.addEventListener('change', () => {
+            autreTypeContainer.classList.toggle('hidden', typeSelect.value !== 'autre');
+        });
+
+        // Localisation manuelle/auto
+        const localisationRadios = document.getElementsByName('localisation_option');
+        const locManuelle = document.getElementById('localisationManuelle');
+        const locAuto = document.getElementById('localisationAuto');
+        const btnGeo = document.getElementById('btnGeo');
+        localisationRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                locAuto.classList.toggle('hidden', radio.value !== 'auto' || !radio.checked);
+                locManuelle.classList.toggle('hidden', radio.value === 'auto' && radio.checked);
+            });
+        });
+
+        // Fonction d'initialisation Leaflet
+        let map, marker;
+        function initLeaflet(lat, lon) {
+            if (!map) {
+                map = L.map('map').setView([lat, lon], 15);
+
+                // Couche de carte OpenStreetMap
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+                }).addTo(map);
+
+                // Marqueur
+                marker = L.marker([lat, lon], { draggable: true })
+                    .addTo(map)
+                    .bindPopup('Votre position actuelle')
+                    .openPopup();
+
+                // Quand le marqueur est déplacé, met à jour les coordonnées cachées
+                marker.on('moveend', e => {
+                    const { lat, lng } = e.target.getLatLng();
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lng;
+                });
+            } else {
+                map.setView([lat, lon], 15);
+                marker.setLatLng([lat, lon]);
+            }
+        }
+
+        // Bouton de géolocalisation
+        btnGeo.addEventListener('click', () => {
+            if (navigator.geolocation) {
+                btnGeo.textContent = "Recherche de la position...";
+                navigator.geolocation.getCurrentPosition(pos => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lon;
+                    initLeaflet(lat, lon);
+                    btnGeo.textContent = "Position détectée ✅ (Glisser le marqueur si besoin)";
+                }, () => {
+                    alert("Impossible d'obtenir votre position. Veuillez vérifier les permissions.");
+                    btnGeo.textContent = "Réessayer la géolocalisation";
+                });
+            } else {
+                alert("La géolocalisation n'est pas supportée par ce navigateur.");
+            }
+        });
+
+        // AJAX Départements / Communes / Arrondissements
         const departementSelect = document.getElementById('departement');
         const communeSelect = document.getElementById('commune');
         const arrondissementSelect = document.getElementById('arrondissement');
 
         departementSelect.addEventListener('change', async function() {
             const depId = this.value;
-            communeSelect.innerHTML = '<option>Chargement...</option>';
+            communeSelect.innerHTML = '<option value="">Chargement...</option>';
             communeSelect.disabled = true;
+            arrondissementSelect.innerHTML = '<option value="">-- Choisir une commune --</option>';
             arrondissementSelect.disabled = true;
 
             if (depId) {
                 const response = await fetch(`/get-communes/${depId}`);
                 const data = await response.json();
-                communeSelect.innerHTML = '<option>-- Sélectionnez une commune --</option>';
+                communeSelect.innerHTML = '<option value="">-- Sélectionnez une commune --</option>';
                 data.forEach(c => communeSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`);
                 communeSelect.disabled = false;
+            } else {
+                communeSelect.innerHTML = '<option value="">-- Choisir un département --</option>';
             }
         });
 
         communeSelect.addEventListener('change', async function() {
             const communeId = this.value;
-            arrondissementSelect.innerHTML = '<option>Chargement...</option>';
+            arrondissementSelect.innerHTML = '<option value="">Chargement...</option>';
             arrondissementSelect.disabled = true;
 
             if (communeId) {
                 const response = await fetch(`/get-arrondissements/${communeId}`);
                 const data = await response.json();
-                arrondissementSelect.innerHTML = '<option>-- Sélectionnez un arrondissement --</option>';
+                arrondissementSelect.innerHTML = '<option value="">-- Sélectionnez un arrondissement --</option>';
                 data.forEach(a => arrondissementSelect.innerHTML += `<option value="${a.id}">${a.name}</option>`);
                 arrondissementSelect.disabled = false;
+            } else {
+                arrondissementSelect.innerHTML = '<option value="">-- Choisir une commune --</option>';
             }
         });
     });
@@ -276,22 +361,25 @@
 <style>
     #map {
         width: 100%;
-        height: 300px;
+        height: 320px; 
         border-radius: 12px;
         animation: fadeInMap 1s ease-in-out;
     }
 
-    @keyframes fadeInMap {
-        from { opacity: 0; transform: scale(0.95); }
-        to { opacity: 1; transform: scale(1); }
+    /* Animations de base */
+    @keyframes fadeInMap { 
+        from { opacity: 0; transform: scale(0.98); } 
+        to { opacity: 1; transform: scale(1); } 
     }
-
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeInSlow { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInUp { 
+        from { opacity: 0; transform: translateY(20px); } 
+        to { opacity: 1; transform: translateY(0); } 
+    }
+    @keyframes fadeInSlow { 
+        from { opacity: 0; } 
+        to { opacity: 1; } 
+    }
     .animate-fadeInUp { animation: fadeInUp 0.5s ease-out; }
     .animate-fadeInSlow { animation: fadeInSlow 1s ease-in; }
 </style>
 @endsection
-
-
-
