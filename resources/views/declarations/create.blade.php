@@ -31,13 +31,32 @@
     <div id="formContainer"
         class="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl p-8 sm:p-10 lg:p-12 transition-all duration-500 transform border border-gray-200">
 
-        {{-- Message succès --}}
+        {{-- Messages de succès --}}
         @if (session('success'))
-            <div class="bg-green-50 border-l-4 border-green-400 text-green-700 p-5 mb-8 rounded-xl animate-fadeIn">
-                <p class="font-medium">Succès :</p>
-                <p class="mt-2 text-sm">{{ session('success') }}</p>
+            <div class="mb-4 p-4 rounded-lg bg-green-100 text-green-700 border border-green-300">
+                <strong>✔ Succès :</strong> {{ session('success') }}
             </div>
         @endif
+
+        {{-- Messages d’erreur généraux --}}
+        @if (session('error'))
+            <div class="mb-4 p-4 rounded-lg bg-red-100 text-red-700 border border-red-300">
+                <strong>⚠ Erreur :</strong> {{ session('error') }}
+            </div>
+        @endif
+
+        {{-- Erreurs de validation (Laravel) --}}
+        @if ($errors->any())
+            <div class="mb-4 p-4 rounded-lg bg-red-50 border border-red-300 text-red-700">
+                <p class="font-semibold mb-2">Veuillez corriger les erreurs suivantes :</p>
+                <ul class="list-disc list-inside space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
 
         {{-- Formulaire avec espacement augmenté --}}
         <form action="{{ route('declarations.store') }}" method="POST" enctype="multipart/form-data" id="declarationForm" class="space-y-12">

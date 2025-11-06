@@ -52,17 +52,27 @@ class DeclarationController extends Controller{
              * 🔹 Étape 1 : Identifier l’utilisateur
              */
             if (Auth::check()) {
+                // Utilisateur connecté
                 $validated['user_id'] = Auth::id();
-            } elseif ($request->urgence == 1) {
-                // Création d’un utilisateur temporaire
+            } 
+            elseif ($request->urgence == 1) {
+                // Déclaration d'urgence sans compte — on crée un utilisateur temporaire
                 $user = User::create([
                     'name' => $request->nom ?? 'Citoyen Anonyme',
                     'email' => $request->email, // peut être nul
                     'password' => bcrypt(str()->random(12)), // mot de passe aléatoire
-                    'role' => 'citoyen', // si tu gères des rôles
+                    'role' => 'citoyen',
                 ]);
+
                 $validated['user_id'] = $user->id;
+            } 
+            elseif ($request->urgence == 0) {
+                // ❌ Cas non autorisé : déclaration avec suivi sans authentification
+                return back()
+                    ->withInput()
+                    ->with('error', 'Vous devez être connecté pour soumettre une déclaration avec suivi.');
             }
+
 
             /**
              * 🔹 Étape 2 : Création de la déclaration
@@ -101,12 +111,14 @@ class DeclarationController extends Controller{
                 ->route('declarations.create')
                 ->with('success', 'Déclaration envoyée avec succès ! Merci pour votre signalement.');
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } 
+        catch (\Illuminate\Validation\ValidationException $e) {
             return back()
                 ->withErrors($e->validator)
                 ->withInput()
                 ->with('error', 'Erreurs de validation, veuillez vérifier les champs.');
-        } catch (\Throwable $e) {
+        } 
+        catch (\Throwable $e) {
             Log::error('Erreur lors de la création d’une déclaration : ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
