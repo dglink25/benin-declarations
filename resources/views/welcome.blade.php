@@ -384,106 +384,7 @@
         box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
         color: white;
     }
-    
-    /* Section Services */
-    .cours-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s ease;
-        border: none;
-        height: 100%;
-    }
-    
-    .cours-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-    }
-    
-    .cours-title {
-        font-weight: 600;
-        color: var(--primary-color);
-        margin-bottom: 15px;
-    }
-    
-    .cours-title span {
-        display: inline-block;
-        background: var(--primary-color);
-        color: white;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        text-align: center;
-        line-height: 40px;
-        margin-right: 15px;
-        font-weight: 700;
-    }
-    
-    .cours-text {
-        color: #666;
-        line-height: 1.6;
-    }
-    
-    .cours-niveau {
-        color: #888;
-        font-size: 0.9rem;
-        margin-top: 15px;
-    }
-    
-    .btn-vp {
-        background: transparent;
-        border: 2px solid var(--primary-color);
-        color: var(--primary-color);
-        padding: 10px 30px;
-        border-radius: 30px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-vp:hover {
-        background: var(--primary-color);
-        color: white;
-    }
-    
-    .cours-toggle-wrapper {
-        text-align: center;
-        margin-top: 30px;
-    }
-    
-    /* Section Histoire du Bénin */
-    .benin-history-section {
-        padding: 100px 0;
-        background: linear-gradient(135deg, #1a5276 0%, #2c3e50 100%);
-        color: white;
-    }
-    
-    .history-card {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border-radius: 15px;
-        padding: 30px;
-        transition: all 0.3s ease;
-        height: 100%;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    .history-card:hover {
-        transform: translateY(-5px);
-        background: rgba(255, 255, 255, 0.15);
-    }
-    
-    .history-icon {
-        font-size: 3rem;
-        margin-bottom: 20px;
-        color: var(--accent-color);
-    }
-    
-    .history-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 15px;
-    }
-    
+
     /* Section Projets */
     .timeline-section {
         padding: 100px 0;
@@ -668,6 +569,24 @@
         line-height: 1.6;
     }
     
+    /* Section Impact */
+    .impact-section {
+        padding: 100px 0;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    
+    .impact-card {
+        transition: all 0.3s ease;
+        border-radius: 15px;
+        overflow: hidden;
+        height: 100%;
+    }
+    
+    .impact-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
     /* Responsive */
     @media (max-width: 768px) {
         .text-wrapper h2 {
@@ -746,7 +665,6 @@
     <button class="btn btn-report animate__animated animate__pulse animate__infinite" data-bs-toggle="modal" data-bs-target="#reportModal">
         <i class="fas fa-exclamation-triangle me-2"></i>Signaler un problème
     </button>
-
     <!-- Barre de navigation corrigée -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container">
@@ -774,17 +692,13 @@
                         <a class="nav-link" href="#programmes">Domaines</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#cours">Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#histoire">Histoire du Bénin</a>
+                        <a class="nav-link" href="#impact">Impact</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Ressources
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#activites">Projets</a></li>
                             <li><a class="dropdown-item" href="#admin">Équipe</a></li>
                             <li><a class="dropdown-item" href="#galerie">Galerie</a></li>
                         </ul>
@@ -906,11 +820,6 @@
                 </div>
             </div>
             
-            <!-- Éléments de décoration -->
-            <img src="https://cdn-icons-png.flaticon.com/512/484/484167.png" class="decor decor-1" alt="Décoration 1">
-            <img src="https://cdn-icons-png.flaticon.com/512/484/484167.png" class="decor decor-2" alt="Décoration 2">
-            <img src="https://cdn-icons-png.flaticon.com/512/484/484167.png" class="decor decor-3" alt="Décoration 3">
-            
             <!-- Contrôles repositionnés -->
             <button class="carousel-control-prev custom-control ms-3" type="button" data-bs-target="#carouselCitiNova" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon"></span>
@@ -959,46 +868,24 @@
             <div class="text-center mb-5">
                 <p class="who-we text-center">Nos domaines d'intervention</p>
                 <h2 class="fw-bold">Domaines d'Infrastructures</h2>
-                <p class="text-muted">CITINOVA couvre l'ensemble des infrastructures publiques essentielles au développement territorial. Notre plateforme permet une gestion optimisée de chaque catégorie d'infrastructures avec des outils adaptés aux besoins spécifiques.</p>
+                <p class="text-muted">CITINOVA se concentre sur deux types d'infrastructures essentielles pour le développement territorial : l'éclairage public et les routes. Notre plateforme permet une gestion optimisée de chaque catégorie avec des outils adaptés aux besoins spécifiques.</p>
                 <button class="btn btn-report-section mt-2" data-bs-toggle="modal" data-bs-target="#reportModal">
                     <i class="fas fa-exclamation-triangle me-2"></i>Signaler un problème d'infrastructure
                 </button>
             </div>
 
             <div class="row g-4">
-                <!-- Éducation -->
-                <div class="col-md-4">
+                <!-- Éclairage Public -->
+                <div class="col-md-6">
                     <div class="card h-100 shadow-sm border-0 programme-card">
-                        <img src="{{ asset('images/INFRASTRUCTURE_etucatif.jpg') }}" class="card-img-top" alt="Infrastructures éducatives">
+                        <img src="{{ asset('images/lampe.jpg') }}" class="card-img-top" alt="Éclairage public">
                         <div class="card-body">
-                            <h5 class="card-title text-orange">Éducation</h5>
-                            <p class="card-text">Gestion des établissements scolaires, universités et centres de formation professionnelle.</p>
+                            <h5 class="card-title text-orange">Éclairage Public</h5>
+                            <p class="card-text">Gestion et suivi des infrastructures d'éclairage public pour améliorer la sécurité et la qualité de vie nocturne.</p>
                             <!-- Statistiques -->
                             <div class="d-flex align-items-center justify-content-between contribution-line">
-                                <span class="fw-semibold text-muted">Infrastructures suivies</span>
-                                <span class="badge rounded-pill bg-gradient-orange">1,247</span>
-                            </div>
-                            <div class="d-flex gap-2 mt-3">
-                                <a href="#" class="btn btn-glass btn-sm flex-fill">Explorer</a>
-                                <button class="btn btn-report-section btn-sm" data-bs-toggle="modal" data-bs-target="#reportModal">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Santé -->
-                <div class="col-md-4">
-                    <div class="card h-100 shadow-sm border-0 programme-card">
-                        <img src="{{ asset('images/infrastructure_santé.jpeg') }}" class="card-img-top" alt="Infrastructures de santé">
-                        <div class="card-body">
-                            <h5 class="card-title text-orange">Santé</h5>
-                            <p class="card-text">Suivi des hôpitaux, centres de santé, dispensaires et infrastructures médicales.</p>
-                            <!-- Statistiques -->
-                            <div class="d-flex align-items-center justify-content-between contribution-line">
-                                <span class="fw-semibold text-muted">Infrastructures suivies</span>
-                                <span class="badge rounded-pill bg-gradient-orange">384</span>
+                                <span class="fw-semibold text-muted">Points lumineux suivis</span>
+                                <span class="badge rounded-pill bg-gradient-orange">15,842</span>
                             </div>
                             <div class="d-flex gap-2 mt-3">
                                 <a href="#" class="btn btn-glass flex-fill">Explorer</a>
@@ -1010,14 +897,13 @@
                     </div>
                 </div>
 
-                <!-- Transport -->
-                <div class="col-md-4">
+                <!-- Routes -->
+                <div class="col-md-6">
                     <div class="card h-100 shadow-sm border-0 programme-card">
-                        <img src="{{ asset('images/transport1.jpeg') }}" class="card-img-top" alt="Infrastructures de transport">
+                        <img src="{{ asset('images/Routes1.jpg') }}" class="card-img-top" alt="Routes">
                         <div class="card-body">
-                            <h5 class="card-title text-orange">Transport</h5>
-                            <p class="card-text">Gestion des routes, ponts, aéroports et autres infrastructures de mobilité.</p>
-                            <!-- Statistiques -->
+                            <h5 class="card-title text-orange">Routes</h5>
+                            <p class="card-text">Suivi et maintenance des infrastructures routières pour assurer la fluidité et la sécurité du transport.</p>
                             <div class="d-flex align-items-center justify-content-between contribution-line">
                                 <span class="fw-semibold text-muted">Km de routes suivis</span>
                                 <span class="badge rounded-pill bg-gradient-orange">2,156</span>
@@ -1031,223 +917,65 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Bloc caché avec plus d'infrastructures -->
-                <div class="collapse" id="moreInfrastructures">
-                    <div class="row g-4 mt-2">
-                        <!-- Énergie -->
-                        <div class="col-md-4">
-                            <div class="card h-100 shadow-sm border-0 programme-card">
-                                <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="card-img-top" alt="Infrastructures énergétiques">
-                                <div class="card-body">
-                                    <h5 class="card-title text-orange">Énergie</h5>
-                                    <p class="card-text">Centrales électriques, réseaux de distribution, barrages et infrastructures solaires.</p>
-                                    <div class="d-flex align-items-center justify-content-between contribution-line">
-                                        <span class="fw-semibold text-muted">Centrales suivies</span>
-                                        <span class="badge rounded-pill bg-gradient-orange">24</span>
-                                    </div>
-                                    <div class="d-flex gap-2 mt-3">
-                                        <a href="#" class="btn btn-glass btn-sm flex-fill">Explorer</a>
-                                        <button class="btn btn-report-section btn-sm" data-bs-toggle="modal" data-bs-target="#reportModal">
-                                            <i class="fas fa-exclamation-triangle"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Eau et Assainissement -->
-                        <div class="col-md-4">
-                            <div class="card h-100 shadow-sm border-0 programme-card">
-                                <img src="{{ asset('images/hydrolique.jpeg') }}" class="card-img-top" alt="Infrastructures hydrauliques">
-                                <div class="card-body">
-                                    <h5 class="card-title text-orange">Eau et Assainissement</h5>
-                                    <p class="card-text">Adduction d'eau, stations de traitement, réseaux d'assainissement et barrages.</p>
-                                    <div class="d-flex align-items-center justify-content-between contribution-line">
-                                        <span class="fw-semibold text-muted">Stations suivies</span>
-                                        <span class="badge rounded-pill bg-gradient-orange">156</span>
-                                    </div>
-                                    <div class="d-flex gap-2 mt-3">
-                                        <a href="#" class="btn btn-glass btn-sm flex-fill">Explorer</a>
-                                        <button class="btn btn-report-section btn-sm" data-bs-toggle="modal" data-bs-target="#reportModal">
-                                            <i class="fas fa-exclamation-triangle"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Télécommunications -->
-                        <div class="col-md-4">
-                            <div class="card h-100 shadow-sm border-0 programme-card">
-                                <img src="{{ asset('images/telecom3.jpeg') }}" class="card-img-top" alt="Infrastructures télécoms">
-                                <div class="card-body">
-                                    <h5 class="card-title text-orange">Télécommunications</h5>
-                                    <p class="card-text">Fibre optique, tours de téléphonie, centres de données et réseaux numériques.</p>
-                                    <div class="d-flex align-items-center justify-content-between contribution-line">
-                                        <span class="fw-semibold text-muted">Tours suivies</span>
-                                        <span class="badge rounded-pill bg-gradient-orange">1,842</span>
-                                    </div>
-                                    <div class="d-flex gap-2 mt-3">
-                                        <a href="#" class="btn btn-glass btn-sm flex-fill">Explorer</a>
-                                        <button class="btn btn-report-section btn-sm" data-bs-toggle="modal" data-bs-target="#reportModal">
-                                            <i class="fas fa-exclamation-triangle"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Administratif -->
-                        <div class="col-md-4">
-                            <div class="card h-100 shadow-sm border-0 programme-card">
-                                <img src="{{ asset('images/administratif.jpeg') }}" class="card-img-top" alt="Infrastructures administratives">
-                                <div class="card-body">
-                                    <h5 class="card-title text-orange">Administratif</h5>
-                                    <p class="card-text">Ministères, préfectures, mairies, palais de justice et bâtiments publics.</p>
-                                    <div class="d-flex align-items-center justify-content-between contribution-line">
-                                        <span class="fw-semibold text-muted">Bâtiments suivis</span>
-                                        <span class="badge rounded-pill bg-gradient-orange">478</span>
-                                    </div>
-                                    <div class="d-flex gap-2 mt-3">
-                                        <a href="#" class="btn btn-glass btn-sm flex-fill">Explorer</a>
-                                        <button class="btn btn-report-section btn-sm" data-bs-toggle="modal" data-bs-target="#reportModal">
-                                            <i class="fas fa-exclamation-triangle"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Sport et Culture -->
-                        <div class="col-md-4">
-                            <div class="card h-100 shadow-sm border-0 programme-card">
-                                <img src="{{ asset('images/sport_culture.jpeg') }}" class="card-img-top" alt="Infrastructures sportives">
-                                <div class="card-body">
-                                    <h5 class="card-title text-orange">Sport et Culture</h5>
-                                    <p class="card-text">Stades, palais des sports, musées, bibliothèques et centres culturels.</p>
-                                    <div class="d-flex align-items-center justify-content-between contribution-line">
-                                        <span class="fw-semibold text-muted">Infrastructures suivies</span>
-                                        <span class="badge rounded-pill bg-gradient-orange">89</span>
-                                    </div>
-                                    <div class="d-flex gap-2 mt-3">
-                                        <a href="#" class="btn btn-glass btn-sm flex-fill">Explorer</a>
-                                        <button class="btn btn-report-section btn-sm" data-bs-toggle="modal" data-bs-target="#reportModal">
-                                            <i class="fas fa-exclamation-triangle"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Agricole -->
-                        <div class="col-md-4">
-                            <div class="card h-100 shadow-sm border-0 programme-card">
-                                <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="card-img-top" alt="Infrastructures agricoles">
-                                <div class="card-body">
-                                    <h5 class="card-title text-orange">Agricole</h5>
-                                    <p class="card-text">Silos, unités de transformation, marchés agricoles et centres de recherche.</p>
-                                    <div class="d-flex align-items-center justify-content-between contribution-line">
-                                        <span class="fw-semibold text-muted">Silos suivis</span>
-                                        <span class="badge rounded-pill bg-gradient-orange">67</span>
-                                    </div>
-                                    <div class="d-flex gap-2 mt-3">
-                                        <a href="#" class="btn btn-glass btn-sm flex-fill">Explorer</a>
-                                        <button class="btn btn-report-section btn-sm" data-bs-toggle="modal" data-bs-target="#reportModal">
-                                            <i class="fas fa-exclamation-triangle"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bouton Voir plus -->
-                <div class="col-12 text-center mt-4">
-                    <button id="toggleInfraBtn" class="btn btn-vp" type="button" data-bs-toggle="collapse" data-bs-target="#moreInfrastructures" aria-expanded="false" aria-controls="moreInfrastructures">
-                        Voir tous les domaines d'infrastructure
-                    </button>
-                </div>
             </div>
         </div>
     </section>
 
-    <!-- Section Histoire du Bénin -->
-    <section id="histoire" class="benin-history-section py-5">
+    <!-- Section Impact -->
+    <section id="impact" class="impact-section py-5">
         <div class="container">
             <div class="text-center mb-5">
-                <p class="who-we text-center">Notre patrimoine</p>
-                <h2 class="fw-bold text-white">Histoire et Patrimoine du Bénin</h2>
-                <p class="text-light">Découvrez la richesse historique et culturelle du Bénin, berceau de civilisations anciennes et terre d'innovations modernes.</p>
-                <button class="btn btn-report-section mt-2" data-bs-toggle="modal" data-bs-target="#reportModal">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Signaler un problème patrimonial
-                </button>
+                <p class="who-we text-center">Notre impact</p>
+                <h2 class="fw-bold">Impact sur le territoire</h2>
+                <p class="text-muted">Découvrez comment CITINOVA transforme la gestion des infrastructures au Bénin avec des résultats concrets et mesurables.</p>
             </div>
 
             <div class="row g-4">
-                <div class="col-md-6 col-lg-3">
-                    <div class="history-card text-center">
-                        <div class="history-icon">
-                            <i class="fas fa-landmark"></i>
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm border-0 impact-card">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="fas fa-road fa-3x text-orange"></i>
+                            </div>
+                            <h5 class="card-title">Routes réhabilitées</h5>
+                            <p class="card-text">Plus de 300 km de routes ont été réhabilitées grâce à notre système de suivi et de signalement.</p>
+                            <div class="d-flex align-items-center justify-content-center">
+                                <span class="badge rounded-pill bg-gradient-orange">+42%</span>
+                                <span class="ms-2 fw-semibold text-muted">d'efficacité</span>
+                            </div>
                         </div>
-                        <h4 class="history-title">Royaumes Anciens</h4>
-                        <p>Découvrez les grands royaumes du Dahomey, du Borgou et leurs richesses architecturales préservées.</p>
                     </div>
                 </div>
 
-                <div class="col-md-6 col-lg-3">
-                    <div class="history-card text-center">
-                        <div class="history-icon">
-                            <i class="fas fa-university"></i>
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm border-0 impact-card">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="fas fa-lightbulb fa-3x text-orange"></i>
+                            </div>
+                            <h5 class="card-title">Éclairage public amélioré</h5>
+                            <p class="card-text">15,000 points lumineux suivis avec un taux de résolution des pannes augmenté de 65%.</p>
+                            <div class="d-flex align-items-center justify-content-center">
+                                <span class="badge rounded-pill bg-gradient-orange">+65%</span>
+                                <span class="ms-2 fw-semibold text-muted">de résolution</span>
+                            </div>
                         </div>
-                        <h4 class="history-title">Patrimoine UNESCO</h4>
-                        <p>Les palais royaux d'Abomey et la ville de Ouidah classés au patrimoine mondial de l'UNESCO.</p>
                     </div>
                 </div>
 
-                <div class="col-md-6 col-lg-3">
-                    <div class="history-card text-center">
-                        <div class="history-icon">
-                            <i class="fas fa-water"></i>
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm border-0 impact-card">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="fas fa-users fa-3x text-orange"></i>
+                            </div>
+                            <h5 class="card-title">Communautés impactées</h5>
+                            <p class="card-text">Plus de 2 millions de citoyens bénéficient d'infrastructures mieux entretenues et plus sûres.</p>
+                            <div class="d-flex align-items-center justify-content-center">
+                                <span class="badge rounded-pill bg-gradient-orange">2M+</span>
+                                <span class="ms-2 fw-semibold text-muted">citoyens</span>
+                            </div>
                         </div>
-                        <h4 class="history-title">Ganvié la Venise</h4>
-                        <p>La cité lacustre de Ganvié, merveille d'architecture traditionnelle sur pilotis.</p>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-3">
-                    <div class="history-card text-center">
-                        <div class="history-icon">
-                            <i class="fas fa-monument"></i>
-                        </div>
-                        <h4 class="history-title">Porte du Non-Retour</h4>
-                        <p>Mémorial de la traite négrière à Ouidah, lieu de mémoire et de recueillement.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row mt-5">
-                <div class="col-lg-6">
-                    <div class="history-card">
-                        <h4 class="history-title">Infrastructures Historiques</h4>
-                        <p>Le Bénin préserve un patrimoine architectural unique alliant traditions ancestrales et modernité. Des cases traditionnelles aux bâtiments coloniaux, chaque édifice raconte une partie de notre histoire.</p>
-                        <ul class="list-unstyled mt-3">
-                            <li><i class="fas fa-check text-warning me-2"></i> Cases à étage du Nord-Bénin</li>
-                            <li><i class="fas fa-check text-warning me-2"></i> Architecture coloniale de Porto-Novo</li>
-                            <li><i class="fas fa-check text-warning me-2"></i> Tata somba classés au patrimoine</li>
-                            <li><i class="fas fa-check text-warning me-2"></i> Mosquées en terre de la région</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="history-card">
-                        <h4 class="history-title">Modernisation et Préservation</h4>
-                        <p>CITINOVA s'engage à préserver le patrimoine architectural béninois tout en accompagnant le développement d'infrastructures modernes et durables.</p>
-                        <p>Notre plateforme permet de suivre l'état des monuments historiques et de coordonner les travaux de restauration pour les générations futures.</p>
-                        <button class="btn btn-report-section mt-3" data-bs-toggle="modal" data-bs-target="#reportModal">
-                            <i class="fas fa-exclamation-triangle me-2"></i>Signaler un monument à restaurer
-                        </button>
                     </div>
                 </div>
             </div>
@@ -1269,13 +997,8 @@
                                 <label for="problemType" class="form-label">Type de problème</label>
                                 <select class="form-select" id="problemType" required>
                                     <option value="">Sélectionnez le type</option>
+                                    <option value="eclairage">Problème d'éclairage public</option>
                                     <option value="route">Route dégradée</option>
-                                    <option value="batiment">Bâtiment endommagé</option>
-                                    <option value="eau">Problème d'eau</option>
-                                    <option value="electricite">Panne d'électricité</option>
-                                    <option value="sante">Infrastructure de santé</option>
-                                    <option value="education">École/Université</option>
-                                    <option value="autre">Autre</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
@@ -1304,152 +1027,6 @@
             </div>
         </div>
     </div>
-
-     <!-- Section Services -->
-    <section id="cours" class="py-5">
-        <div class="container">
-            <p class="who-we text-center">Nos services</p>
-            <h2 class="text-center mb-4">Services CITINOVA</h2>
-            <p class="text-center mb-5">Découvrez les services que nous proposons pour optimiser la gestion des infrastructures territoriales au Bénin.</p>
-
-            <div class="row g-4" id="coursList">
-                <!-- Cartes visibles par défaut -->
-                <div class="col-md-4">
-                    <div class="cours-card h-100">
-                        <div class="card-body">
-                            <h5 class="cours-title"><span class="bg-3">01</span>Suivi en Temps Réel</h5>
-                            <p class="cours-text">Surveillance continue de l'état des infrastructures avec alertes automatiques pour maintenance préventive.</p>
-                            <p class="cours-niveau">
-                                <i class="fas fa-chart-line text-warning ms-3 me-2"></i> Analytics
-                                <i class="fas fa-bell text-warning ms-3 me-2"></i> Alertes
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="cours-card h-100">
-                        <div class="card-body">
-                            <h5 class="cours-title"><span class="bg-3">02</span>Gestion Budgétaire</h5>
-                            <p class="cours-text">Optimisation des ressources financières avec suivi des dépenses et planification des investissements.</p>
-                            <p class="cours-niveau">
-                                <i class="fas fa-money-bill-wave text-warning me-2"></i> Finance
-                                <i class="fas fa-chart-pie text-warning ms-3 me-2"></i> Reporting
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="cours-card h-100">
-                        <div class="card-body">
-                            <h5 class="cours-title">
-                                <span class="bg-3">03</span> Collaboration Multi-Niveaux
-                            </h5>
-                            <p class="cours-text">
-                                Plateforme de coordination entre les différents échelons administratifs pour une gestion cohérente.
-                            </p>
-                            <p class="cours-niveau">
-                                <i class="fas fa-users text-warning ms-3 me-2"></i> Collaboration
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bloc caché -->
-                <div class="collapse" id="moreCourses">
-                    <div class="row g-4 mt-2">
-                        <div class="col-md-4">
-                            <div class="cours-card h-100">
-                                <div class="card-body">
-                                    <h5 class="cours-title"><span class="bg-3">04</span>Cartographie Interactive</h5>
-                                    <p class="cours-text">Visualisation géographique des infrastructures avec filtres par type, état et localisation.</p>
-                                    <p class="cours-niveau">
-                                        <i class="fas fa-map text-warning ms-3 me-2"></i> Géolocalisation
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="cours-card h-100">
-                                <div class="card-body">
-                                    <h5 class="cours-title"><span class="bg-3">05</span>Rapports Automatisés</h5>
-                                    <p class="cours-text">Génération automatique de rapports détaillés pour la prise de décision éclairée.</p>
-                                    <p class="cours-niveau">
-                                        <i class="fas fa-file-alt text-warning ms-3 me-2"></i> Documentation
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="cours-card h-100">
-                                <div class="card-body">
-                                    <h5 class="cours-title"><span class="bg-3">06</span>Maintenance Prédictive</h5>
-                                    <p class="cours-text">Anticipation des besoins de maintenance grâce à l'analyse des données historiques.</p>
-                                    <p class="cours-niveau">
-                                        <i class="fas fa-tools text-warning ms-3 me-2"></i> Maintenance
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bouton intégré dans la liste -->
-                <div class="cours-toggle-wrapper">
-                    <button id="toggleBtn" class="btn btn-vp toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#moreCourses" aria-expanded="false" aria-controls="moreCourses">
-                        Voir plus de services
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section Projets -->
-    <section id="activites" class="timeline-section">
-        <div class="container">
-            <p class="who-we text-center">Nos réalisations</p>
-            <h2 class="section-title text-center" > Projets Réalisés</h2>
-            <p class="text-center mb-5">
-                Découvrez les projets d'infrastructures que nous avons accompagnés à travers le Bénin, avec des résultats concrets et mesurables.
-            </p>
-            <div class="timeline">
-
-                <!-- Projet 1 -->
-                <div class="timeline-item left">
-                    <div class="timeline-content">
-                        <h4>Modernisation des Écoles Primaires <i class="fas fa-school text-orange"></i></h4>
-                        <p>Rénovation de 50 écoles primaires dans 5 départements, avec amélioration des conditions d'apprentissage pour 15,000 élèves.</p>
-                    </div>
-                </div>
-
-                <!-- Projet 2 -->
-                <div class="timeline-item right">
-                    <div class="timeline-content">
-                        <h4>Réseau Routier Departmental <i class="fas fa-road text-orange"></i></h4>
-                        <p>Construction et réhabilitation de 500 km de routes départementales, améliorant la connectivité entre les communes.</p>
-                    </div>
-                </div>
-
-                <!-- Projet 3 -->
-                <div class="timeline-item left">
-                    <div class="timeline-content">
-                        <h4>Centres de Santé Communautaires <i class="fas fa-hospital text-orange"></i></h4>
-                        <p>Équipement de 20 centres de santé avec du matériel médical moderne, bénéficiant à 200,000 habitants.</p>
-                    </div>
-                </div>
-
-                <div class="timeline-item right">
-                    <div class="timeline-content">
-                        <h4>Infrastructures Numériques <i class="fas fa-wifi text-orange"></i></h4>
-                        <p>Déploiement de la fibre optique dans 10 communes, facilitant l'accès au haut débit pour les administrations et les citoyens.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Section Équipe -->
     <section id="admin" class="teachers-section p-5 bg-light">
@@ -1480,16 +1057,6 @@
             <div class="col-md-6 col-lg-3">
                 <div class="teacher-card text-center p-2 rounded">
                     <div class="image">
-                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Chef de Projet" class="teacher-img" style="width: 200px; height: 200px; object-fit: cover; border-radius: 50%;">
-                    </div>
-                    <h5 class="teacher-name mt-3">Alice Sèna</h5>
-                    <p class="teacher-title">Chef de Projet</p>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="teacher-card text-center p-2 rounded">
-                    <div class="image">
                         <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Expert Infrastructure" class="teacher-img" style="width: 200px; height: 200px; object-fit: cover; border-radius: 50%;">
                     </div>
                     <h5 class="teacher-name mt-3">Koffi Adjanoh</h5>
@@ -1503,43 +1070,43 @@
     <!-- Section Galerie -->
     <section id="galerie">
         <div class="container">
-            <p class="who-we text-center">Galerie de nos réalisations</p>
-            <h2 class="section-title text-center" >Galerie</h2>
+            <p class="who-we text-center">Problèmes signalés et résolus</p>
+            <h2 class="section-title text-center" >Signalements</h2>
 
             <div class="row g-4">
                 <div class="col-12 col-sm-6 col-md-4">
                     <div class="overflow-hidden rounded shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Infrastructure éducative" class="img-fluid gallery-img" data-bs-toggle="modal" data-bs-target="#galleryModal" data-img-src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80">
+                        <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Éclairage public défaillant" class="img-fluid gallery-img" data-bs-toggle="modal" data-bs-target="#galleryModal" data-img-src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80">
                     </div>
                 </div>
 
                 <div class="col-12 col-sm-6 col-md-4">
                     <div class="overflow-hidden rounded shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1583324113626-70df0f4deaab?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Planification urbaine" class="img-fluid gallery-img" data-bs-toggle="modal" data-bs-target="#galleryModal" data-img-src="https://images.unsplash.com/photo-1583324113626-70df0f4deaab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80">
+                        <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Route dégradée" class="img-fluid gallery-img" data-bs-toggle="modal" data-bs-target="#galleryModal" data-img-src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80">
                     </div>
                 </div>
 
                 <div class="col-12 col-sm-6 col-md-4">
                     <div class="overflow-hidden rounded shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Infrastructure de transport" class="img-fluid gallery-img" data-bs-toggle="modal" data-bs-target="#galleryModal" data-img-src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80">
+                        <img src="https://images.unsplash.com/photo-1583324113626-70df0f4deaab?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Route réhabilitée" class="img-fluid gallery-img" data-bs-toggle="modal" data-bs-target="#galleryModal" data-img-src="https://images.unsplash.com/photo-1583324113626-70df0f4deaab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80">
                     </div>
                 </div>
 
                 <div class="col-12 col-sm-6 col-md-4">
                     <div class="overflow-hidden rounded shadow-sm">
-                        <img src="{{ asset('images/santé_moderne.jpeg') }}" alt="Infrastructure de santé" class="img-fluid gallery-img" data-bs-toggle="modal" data-bs-target="#galleryModal" data-img-src="https://images.unsplash.com/photo-1516549655669-df5c78905421?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80">
+                        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Éclairage public fonctionnel" class="img-fluid gallery-img" data-bs-toggle="modal" data-bs-target="#galleryModal" data-img-src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80">
                     </div>
                 </div>
 
                 <div class="col-12 col-sm-6 col-md-4">
                     <div class="overflow-hidden rounded shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Réseau routier" class="img-fluid gallery-img" data-bs-toggle="modal" data-bs-target="#galleryModal" data-img-src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80">
+                        <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Travaux de réhabilitation" class="img-fluid gallery-img" data-bs-toggle="modal" data-bs-target="#galleryModal" data-img-src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80">
                     </div>
                 </div>
 
                 <div class="col-12 col-sm-6 col-md-4">
                     <div class="overflow-hidden rounded shadow-sm">
-                        <img src="{{ asset('images/ecole_moderne.jpeg') }}" alt="École moderne" class="img-fluid gallery-img" data-bs-toggle="modal" data-bs-target="#galleryModal" data-img-src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80">
+                        <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Carte des interventions" class="img-fluid gallery-img" data-bs-toggle="modal" data-bs-target="#galleryModal" data-img-src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80">
                     </div>
                 </div>
             </div>
@@ -1647,24 +1214,6 @@
                 });
             });
             
-            // Gestion du bouton "Voir plus" des infrastructures
-            const toggleInfraBtn = document.getElementById('toggleInfraBtn');
-            if (toggleInfraBtn) {
-                toggleInfraBtn.addEventListener('click', function() {
-                    const expanded = this.getAttribute('aria-expanded') === 'true';
-                    this.textContent = expanded ? 'Voir tous les domaines d\'infrastructure' : 'Voir moins';
-                });
-            }
-            
-            // Gestion du bouton "Voir plus" des services
-            const toggleBtn = document.getElementById('toggleBtn');
-            if (toggleBtn) {
-                toggleBtn.addEventListener('click', function() {
-                    const expanded = this.getAttribute('aria-expanded') === 'true';
-                    this.textContent = expanded ? 'Voir plus de services' : 'Voir moins';
-                });
-            }
-            
             // Animation au défilement
             const animateOnScroll = function() {
                 const elements = document.querySelectorAll('.timeline-item, .programme-card, .cours-card, .teacher-card, .history-card');
@@ -1703,5 +1252,3 @@
     </script>
 </body>
 </html>
-    
-   
