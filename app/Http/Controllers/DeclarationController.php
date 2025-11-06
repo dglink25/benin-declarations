@@ -67,7 +67,7 @@ class DeclarationController extends Controller{
                 $validated['user_id'] = $user->id;
             } 
             elseif ($request->urgence == 0) {
-                // ❌ Cas non autorisé : déclaration avec suivi sans authentification
+                // Cas non autorisé : déclaration avec suivi sans authentification
                 return back()
                     ->withInput()
                     ->with('error', 'Vous devez être connecté pour soumettre une déclaration avec suivi.');

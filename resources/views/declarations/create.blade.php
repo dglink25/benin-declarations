@@ -38,7 +38,7 @@
             </div>
         @endif
 
-        {{-- Messages d’erreur généraux --}}
+        {{-- Messages d'erreur généraux --}}
         @if (session('error'))
             <div class="mb-4 p-4 rounded-lg bg-red-100 text-red-700 border border-red-300">
                 <strong>⚠ Erreur :</strong> {{ session('error') }}
@@ -56,7 +56,6 @@
                 </ul>
             </div>
         @endif
-
 
         {{-- Formulaire avec espacement augmenté --}}
         <form action="{{ route('declarations.store') }}" method="POST" enctype="multipart/form-data" id="declarationForm" class="space-y-12">
@@ -216,10 +215,89 @@
                             <span>Activer la géolocalisation</span>
                         </button>
                     </div>
-                    <input type="hidden" name="latitude" id="latitude">
-                    <input type="hidden" name="longitude" id="longitude">
+                    
+                    {{-- Champs de coordonnées visibles --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <label for="latitude" class="block text-base font-semibold text-gray-700">Latitude <span class="text-red-500">*</span></label>
+                            <input type="text" name="latitude" id="latitude" required
+                                class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4"
+                                placeholder="Latitude GPS" readonly>
+                        </div>
+                        <div class="space-y-3">
+                            <label for="longitude" class="block text-base font-semibold text-gray-700">Longitude <span class="text-red-500">*</span></label>
+                            <input type="text" name="longitude" id="longitude" required
+                                class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4"
+                                placeholder="Longitude GPS" readonly>
+                        </div>
+                    </div>
+
+                    {{-- Carte --}}
                     <div class="space-y-3">
                         <div id="map" class="w-full h-80 rounded-2xl shadow-lg border-2 border-gray-300 transition-all duration-500 ease-in-out"></div>
+                    </div>
+
+                    {{-- Lien de localisation --}}
+                    <div class="space-y-3">
+                        <label for="lien_localisation" class="block text-base font-semibold text-gray-700">Lien de localisation (Google Maps)</label>
+                        <input type="text" name="lien_localisation" id="lien_localisation"
+                            class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4"
+                            placeholder="Lien Google Maps" readonly>
+                    </div>
+
+                    {{-- Informations géocodées --}}
+                    <div id="geoInfo" class="hidden space-y-6 p-6 bg-blue-50 rounded-2xl border-2 border-blue-200">
+                        <h3 class="text-xl font-bold text-blue-800 flex items-center gap-2">
+                            📍 Informations de localisation détectées
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {{-- Département détecté --}}
+                            <div class="space-y-3">
+                                <label class="block text-sm font-semibold text-blue-700">Département détecté</label>
+                                <div class="flex items-center gap-3">
+                                    <input type="text" id="detected_departement" 
+                                        class="w-full rounded-xl border-2 border-blue-300 bg-white p-4 font-medium text-blue-800"
+                                        readonly>
+                                    <input type="hidden" name="detected_departement_id" id="detected_departement_id">
+                                </div>
+                            </div>
+                            
+                            {{-- Commune détectée --}}
+                            <div class="space-y-3">
+                                <label class="block text-sm font-semibold text-blue-700">Commune détectée</label>
+                                <div class="flex items-center gap-3">
+                                    <input type="text" id="detected_commune" 
+                                        class="w-full rounded-xl border-2 border-blue-300 bg-white p-4 font-medium text-blue-800"
+                                        readonly>
+                                    <input type="hidden" name="detected_commune_id" id="detected_commune_id">
+                                </div>
+                            </div>
+                            
+                            {{-- Arrondissement détecté --}}
+                            <div class="space-y-3">
+                                <label class="block text-sm font-semibold text-blue-700">Arrondissement détecté</label>
+                                <div class="flex items-center gap-3">
+                                    <input type="text" id="detected_arrondissement" 
+                                        class="w-full rounded-xl border-2 border-blue-300 bg-white p-4 font-medium text-blue-800"
+                                        readonly>
+                                    <input type="hidden" name="detected_arrondissement_id" id="detected_arrondissement_id">
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Adresse complète --}}
+                        <div class="space-y-3">
+                            <label class="block text-sm font-semibold text-blue-700">Adresse complète détectée</label>
+                            <input type="text" id="detected_adresse" 
+                                class="w-full rounded-xl border-2 border-blue-300 bg-white p-4 font-medium text-blue-800"
+                                readonly>
+                        </div>
+
+                        <div class="flex items-center gap-2 text-blue-600">
+                            <span>✅</span>
+                            <span class="text-sm">Ces informations ont été automatiquement détectées à partir de votre position GPS</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -237,8 +315,12 @@
 
 {{-- Scripts --}}
 <script>
-    // Initialisation du mode Urgence (Forme 2 par défaut)
     document.addEventListener('DOMContentLoaded', () => {
+        // Variables globales
+        let map, marker;
+        let currentLat, currentLon;
+
+        // Initialisation du mode Urgence (Forme 2 par défaut)
         const btnUrgence = document.getElementById('btnUrgence');
         const btnSuivi = document.getElementById('btnSuivi');
         const urgenceInput = document.getElementById('urgence');
@@ -314,13 +396,10 @@
             const imageInput = document.getElementById('images');
             
             imageInput.addEventListener('click', function(e) {
-                // Vérifier si on est sur mobile et si la caméra est disponible
                 if (/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) {
                     e.preventDefault();
                     
-                    // Vérifier si l'API MediaDevices est disponible
                     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                        // Demander à l'utilisateur ce qu'il préfère
                         const choice = confirm(
                             "Voulez-vous utiliser la caméra pour prendre une photo ?\n\n" +
                             "OK : Prendre une photo avec la caméra\n" +
@@ -343,7 +422,7 @@
         const openCamera = () => {
             const constraints = {
                 video: { 
-                    facingMode: 'environment', // Caméra arrière
+                    facingMode: 'environment',
                     width: { ideal: 1920 },
                     height: { ideal: 1080 }
                 },
@@ -363,7 +442,6 @@
 
         // Fonction pour afficher la modal de caméra
         const showCameraModal = (stream) => {
-            // Créer la modal
             const modal = document.createElement('div');
             modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
             modal.innerHTML = `
@@ -396,25 +474,21 @@
             
             video.srcObject = stream;
             
-            // Capturer la photo
             captureBtn.addEventListener('click', function() {
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
                 const context = canvas.getContext('2d');
                 context.drawImage(video, 0, 0);
                 
-                // Convertir en blob et ajouter au input file
                 canvas.toBlob(function(blob) {
                     const file = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
                     addFileToInput(file);
                     
-                    // Fermer la modal et arrêter la caméra
                     stream.getTracks().forEach(track => track.stop());
                     modal.remove();
                 }, 'image/jpeg', 0.8);
             });
             
-            // Annuler
             cancelBtn.addEventListener('click', function() {
                 stream.getTracks().forEach(track => track.stop());
                 modal.remove();
@@ -436,75 +510,58 @@
         // Fonction pour ajouter un fichier au input
         const addFileToInput = (file) => {
             const input = document.getElementById('images');
-            
-            // Créer un nouveau DataTransfer pour gérer les fichiers
             const dataTransfer = new DataTransfer();
             
-            // Ajouter les fichiers existants
             for (let i = 0; i < input.files.length; i++) {
                 dataTransfer.items.add(input.files[i]);
             }
             
-            // Ajouter le nouveau fichier
             dataTransfer.items.add(file);
-            
-            // Mettre à jour les fichiers du input
             input.files = dataTransfer.files;
-            
-            // Déclencher un événement change pour mettre à jour l'interface
             input.dispatchEvent(new Event('change', { bubbles: true }));
-            
-            // Afficher un message de confirmation
             alert("Photo ajoutée avec succès !");
         };
 
         // Initialiser la configuration des images
         setupImageInput();
 
-        // Animation champ "autre"
-        const typeSelect = document.getElementById('type');
-        const autreTypeContainer = document.getElementById('autreTypeContainer');
-        if (typeSelect) {
-            typeSelect.addEventListener('change', () => {
-                autreTypeContainer.classList.toggle('hidden', typeSelect.value !== 'autre');
-            });
-        }
-
         // Localisation manuelle/auto
         const localisationRadios = document.getElementsByName('localisation_option');
         const locManuelle = document.getElementById('localisationManuelle');
         const locAuto = document.getElementById('localisationAuto');
         const btnGeo = document.getElementById('btnGeo');
+
         localisationRadios.forEach(radio => {
             radio.addEventListener('change', () => {
-                locAuto.classList.toggle('hidden', radio.value !== 'auto' || !radio.checked);
-                locManuelle.classList.toggle('hidden', radio.value === 'auto' && radio.checked);
+                if (radio.value === 'auto' && radio.checked) {
+                    locAuto.classList.remove('hidden');
+                    locManuelle.classList.add('hidden');
+                } else {
+                    locAuto.classList.add('hidden');
+                    locManuelle.classList.remove('hidden');
+                }
             });
         });
 
         // Fonction d'initialisation Leaflet
-        let map, marker;
         function initLeaflet(lat, lon) {
             if (!map) {
                 map = L.map('map').setView([lat, lon], 15);
 
-                // Couche de carte OpenStreetMap
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
                     attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
                 }).addTo(map);
 
-                // Marqueur
                 marker = L.marker([lat, lon], { draggable: true })
                     .addTo(map)
-                    .bindPopup('Votre position actuelle')
+                    .bindPopup('Votre position actuelle<br>Glissez pour ajuster')
                     .openPopup();
 
-                // Quand le marqueur est déplacé, met à jour les coordonnées cachées
-                marker.on('moveend', e => {
+                marker.on('moveend', async function(e) {
                     const { lat, lng } = e.target.getLatLng();
-                    document.getElementById('latitude').value = lat;
-                    document.getElementById('longitude').value = lng;
+                    updateCoordinates(lat, lng);
+                    await reverseGeocode(lat, lng);
                 });
             } else {
                 map.setView([lat, lon], 15);
@@ -512,27 +569,144 @@
             }
         }
 
+        // Fonction pour mettre à jour les coordonnées
+        function updateCoordinates(lat, lng) {
+            currentLat = lat;
+            currentLon = lng;
+            
+            document.getElementById('latitude').value = lat.toFixed(6);
+            document.getElementById('longitude').value = lng.toFixed(6);
+            document.getElementById('lien_localisation').value = `https://www.google.com/maps?q=${lat},${lng}`;
+        }
+
+        // Fonction de géocodage inverse (Nominatim)
+        async function reverseGeocode(lat, lng) {
+            const geoInfo = document.getElementById('geoInfo');
+            const btnGeo = document.getElementById('btnGeo');
+            
+            try {
+                btnGeo.innerHTML = '<span>🔄</span><span>Récupération des informations...</span>';
+                
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+                const data = await response.json();
+                
+                if (data && data.address) {
+                    const address = data.address;
+                    
+                    // Récupérer les informations d'adresse
+                    const departement = address.state || address.county || address.region || 'Non spécifié';
+                    const commune = address.city || address.town || address.village || address.municipality || 'Non spécifié';
+                    const arrondissement = address.suburb || address.city_district || 'Non spécifié';
+                    const quartier = address.neighbourhood || address.quarter || '';
+                    const rue = address.road || '';
+                    const numero = address.house_number || '';
+                    
+                    // Mettre à jour l'interface
+                    document.getElementById('detected_departement').value = departement;
+                    document.getElementById('detected_commune').value = commune;
+                    document.getElementById('detected_arrondissement').value = arrondissement;
+                    
+                    let adresseComplete = '';
+                    if (numero) adresseComplete += numero + ' ';
+                    if (rue) adresseComplete += rue + ', ';
+                    if (quartier) adresseComplete += quartier + ', ';
+                    if (arrondissement !== 'Non spécifié') adresseComplete += arrondissement + ', ';
+                    adresseComplete += commune + ', ' + departement;
+                    
+                    document.getElementById('detected_adresse').value = adresseComplete;
+                    
+                    // Afficher la section d'information
+                    geoInfo.classList.remove('hidden');
+                    
+                    // Essayer de trouver les IDs correspondants dans la base de données
+                    await findMatchingLocationIds(departement, commune, arrondissement);
+                    
+                    btnGeo.innerHTML = '<span>✅</span><span>Position détectée (Glisser le marqueur si besoin)</span>';
+                }
+            } catch (error) {
+                console.error('Erreur géocodage:', error);
+                btnGeo.innerHTML = '<span>🌐</span><span>Activer la géolocalisation</span>';
+                alert('Erreur lors de la récupération des informations de localisation.');
+            }
+        }
+
+        // Fonction pour trouver les IDs correspondants
+        async function findMatchingLocationIds(departement, commune, arrondissement) {
+            try {
+                // Recherche du département
+                const depResponse = await fetch(`/find-departement?name=${encodeURIComponent(departement)}`);
+                if (depResponse.ok) {
+                    const depData = await depResponse.json();
+                    if (depData.id) {
+                        document.getElementById('detected_departement_id').value = depData.id;
+                    }
+                }
+
+                // Recherche de la commune
+                const comResponse = await fetch(`/find-commune?name=${encodeURIComponent(commune)}&departement=${encodeURIComponent(departement)}`);
+                if (comResponse.ok) {
+                    const comData = await comResponse.json();
+                    if (comData.id) {
+                        document.getElementById('detected_commune_id').value = comData.id;
+                    }
+                }
+
+                // Recherche de l'arrondissement
+                const arrResponse = await fetch(`/find-arrondissement?name=${encodeURIComponent(arrondissement)}&commune=${encodeURIComponent(commune)}`);
+                if (arrResponse.ok) {
+                    const arrData = await arrResponse.json();
+                    if (arrData.id) {
+                        document.getElementById('detected_arrondissement_id').value = arrData.id;
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur recherche IDs:', error);
+            }
+        }
+
         // Bouton de géolocalisation
         btnGeo.addEventListener('click', () => {
             if (navigator.geolocation) {
-                btnGeo.textContent = "Recherche de la position...";
-                navigator.geolocation.getCurrentPosition(pos => {
+                btnGeo.innerHTML = '<span>📍</span><span>Recherche de la position...</span>';
+                navigator.geolocation.getCurrentPosition(async pos => {
                     const lat = pos.coords.latitude;
                     const lon = pos.coords.longitude;
-                    document.getElementById('latitude').value = lat;
-                    document.getElementById('longitude').value = lon;
+                    
+                    updateCoordinates(lat, lon);
                     initLeaflet(lat, lon);
-                    btnGeo.textContent = "Position détectée (Glisser le marqueur si besoin)";
-                }, () => {
-                    alert("Impossible d'obtenir votre position. Veuillez vérifier les permissions.");
-                    btnGeo.textContent = "Réessayer la géolocalisation";
+                    await reverseGeocode(lat, lon);
+                    
+                }, (error) => {
+                    console.error('Erreur géolocalisation:', error);
+                    let message = "Impossible d'obtenir votre position. ";
+                    
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            message += "Vous avez refusé l'accès à la géolocalisation.";
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            message += "Les informations de localisation sont indisponibles.";
+                            break;
+                        case error.TIMEOUT:
+                            message += "La demande de localisation a expiré.";
+                            break;
+                        default:
+                            message += "Erreur inconnue.";
+                    }
+                    
+                    alert(message);
+                    btnGeo.innerHTML = '<span>🌐</span><span>Activer la géolocalisation</span>';
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 60000
                 });
             } else {
                 alert("La géolocalisation n'est pas supportée par ce navigateur.");
             }
         });
 
-        // AJAX Départements / Communes / Arrondissements
+        // AJAX Départements / Communes / Arrondissements (pour la localisation manuelle)
         const departementSelect = document.getElementById('departement');
         const communeSelect = document.getElementById('commune');
         const arrondissementSelect = document.getElementById('arrondissement');
@@ -573,11 +747,11 @@
     });
 </script>
 
-{{-- 🔹 Import de Leaflet (CSS + JS) --}}
+{{-- Import de Leaflet --}}
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-{{-- 🔹 Style carte et animations --}}
+{{-- Styles --}}
 <style>
     #map {
         width: 100%;
@@ -628,5 +802,15 @@
     }
     .animate-fadeInUp { animation: fadeInUp 0.5s ease-out; }
     .animate-fadeInSlow { animation: fadeInSlow 1s ease-in; }
+
+    /* Style pour les informations géolocalisées */
+    #geoInfo {
+        animation: slideDown 0.5s ease-out;
+    }
+
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 </style>
 @endsection

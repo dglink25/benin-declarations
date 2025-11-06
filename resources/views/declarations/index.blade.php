@@ -18,7 +18,7 @@
             <p class="text-gray-600 text-xl font-semibold mb-6">Aucune déclaration trouvée.</p>
             <a href="{{ route('declarations.create') }}"
                class="inline-block px-8 py-3 bg-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:bg-indigo-700 transition transform hover:scale-105 duration-300">
-                ➕ Déclarer un nouveau problème
+                Déclarer un nouveau problème
             </a>
         </div>
     @else
@@ -35,7 +35,7 @@
                             </h2>
                             <span class="px-3 py-1 text-xs font-semibold rounded-full uppercase ml-3 flex-shrink-0
                                 {{ $declaration->urgence ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200' }}">
-                                {{ $declaration->urgence ? '🚨 URGENCE' : '✅ Suivi' }}
+                                {{ $declaration->urgence ? 'URGENCE' : 'Suivi' }}
                             </span>
                         </div>
 
@@ -47,19 +47,31 @@
                         {{-- Localisation --}}
                         <div class="text-xs text-gray-500 mb-4 border-t pt-3 space-y-1">
                             @if($declaration->departement)
-                                <p class="font-bold text-gray-700">📍 Adresse Manuelle :</p>
-                                <p>Dép. : <span class="font-medium text-gray-600">{{ $declaration->departement->name }}</span></p>
+                                <p class="font-bold text-gray-700">Adresse Manuelle :</p>
+                                <p>Département : <span class="font-medium text-gray-600">{{ $declaration->departement->name }}</span></p>
                                 @if(optional($declaration->commune)->name)
-                                    <p>Com. : <span class="font-medium text-gray-600">{{ optional($declaration->commune)->name }}</span></p>
+                                    <p>Commune : <span class="font-medium text-gray-600">{{ optional($declaration->commune)->name }}</span></p>
+                                @endif
+                                @if(optional($declaration->arrondissement)->name)
+                                    <p>Arrondissement : <span class="font-medium text-gray-600">{{ optional($declaration->arrondissement)->name }}</span></p>
                                 @endif
                                 @if($declaration->quartier)
-                                    <p>Quartier : <span class="font-medium text-gray-600">{{ $declaration->quartier }}</span></p>
+                                    <p>Quatier : <span class="font-medium text-gray-600">{{ $declaration->quartier }}</span></p>
                                 @endif
+
+                                @if($declaration->rue)
+                                    <p>Rue : <span class="font-medium text-gray-600">{{ $declaration->rue }}</span></p>
+                                @endif
+
+                                @if($declaration->maison)
+                                    <p>Maison : <span class="font-medium text-gray-600">{{ $declaration->maison }}</span></p>
+                                @endif
+
                             @elseif($declaration->latitude && $declaration->longitude)
-                                <p class="font-bold text-gray-700">🌐 Géolocalisation :</p>
+                                <p class="font-bold text-gray-700">Géolocalisation :</p>
                                 <a target="_blank" href="https://maps.google.com/maps?q={{ $declaration->latitude }},{{ $declaration->longitude }}"
                                    class="text-blue-600 hover:text-blue-800 transition flex items-center mt-1">
-                                    Voir la position sur la carte ↗
+                                    Voir la position sur la carte
                                 </a>
                             @else
                                 <p>Localisation non précisée</p>
