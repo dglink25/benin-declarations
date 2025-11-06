@@ -18,12 +18,12 @@
         <button id="btnUrgence"
             class="mode-btn px-8 py-4 rounded-xl font-bold shadow-lg transition-all duration-300 transform border-2 border-transparent text-white bg-red-600 hover:bg-red-700 hover:scale-[1.03] active:scale-[0.98]"
             data-mode="1">
-            🚨 Forme 1 : Urgence Immédiate
+            Forme 1 : Urgence Immédiate
         </button>
         <button id="btnSuivi"
             class="mode-btn px-8 py-4 rounded-xl font-bold shadow-lg transition-all duration-300 transform border-2 border-indigo-500 text-indigo-600 bg-white hover:bg-indigo-50 hover:scale-[1.03] active:scale-[0.98] active-mode"
             data-mode="0">
-            ✅ Forme 2 : Avec Suivi et Détails
+            Forme 2 : Avec Suivi et Détails
         </button>
     </div>
 
@@ -34,7 +34,7 @@
         {{-- Message succès --}}
         @if (session('success'))
             <div class="bg-green-50 border-l-4 border-green-400 text-green-700 p-5 mb-8 rounded-xl animate-fadeIn">
-                <p class="font-medium">✅ Succès :</p>
+                <p class="font-medium">Succès :</p>
                 <p class="mt-2 text-sm">{{ session('success') }}</p>
             </div>
         @endif
@@ -47,30 +47,13 @@
             {{-- Section Détails du Problème --}}
             <div class="space-y-8 bg-gray-50 p-8 rounded-2xl border border-gray-100">
                 <h2 class="text-2xl font-bold text-gray-700 border-b-2 border-gray-200 pb-4 mb-6 flex items-center">
-                    📝 Détails de l'incident
+                    Détails de l'incident
                 </h2>
 
-                {{-- Type --}}
                 <div class="space-y-3">
-                    <label for="type" class="block text-base font-semibold text-gray-700">Type de déclaration <span class="text-red-500">*</span></label>
-                    <select name="type" id="type" required
-                        class="w-full rounded-xl border-gray-300 text-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all shadow-sm p-4 border-2">
-                        <option value="">-- Sélectionnez un type d'incident --</option>
-                        <option value="incendie">🔥 Incendie</option>
-                        <option value="accident">🚗 Accident de la route</option>
-                        <option value="vol">🔪 Vol / Effraction</option>
-                        <option value="incident_sanitaire">💊 Incident sanitaire</option>
-                        <option value="infrastructure_endommagee">🚧 Infrastructure endommagée</option>
-                        <option value="autre">... Autre (à préciser)</option>
-                    </select>
-                </div>
-
-                {{-- Type personnalisé --}}
-                <div class="hidden transition-all duration-300 ease-in-out space-y-3" id="autreTypeContainer">
-                    <label for="autre_type" class="block text-base font-semibold text-gray-700">Précisez le type (si "Autre" sélectionné)</label>
-                    <input type="text" name="autre_type" id="autre_type"
-                        class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all shadow-sm p-4 border-2"
-                        placeholder="Ex : Problème d'eau potable / Panne d'électricité">
+                    <label for="images" class="block text-base font-semibold text-gray-700">Images (Photos)</label>
+                    <input type="file" name="images[]" multiple accept="image/*" id="images"
+                        class="block w-full text-gray-700 border-2 border-gray-300 rounded-xl p-4 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-base file:font-semibold file:bg-indigo-500 file:text-white hover:file:bg-indigo-600 transition-all duration-200">
                 </div>
 
                 {{-- Description --}}
@@ -85,16 +68,11 @@
             {{-- Section Pièces Jointes --}}
             <div class="space-y-8 bg-gray-50 p-8 rounded-2xl border border-gray-100">
                 <h2 class="text-2xl font-bold text-gray-700 border-b-2 border-gray-200 pb-4 mb-6 flex items-center">
-                    📸 Pièces Jointes (Optionnel)
+                    Pièces Jointes (Optionnel)
                 </h2>
                 <p class="text-base text-gray-600 mb-6">Aidez-nous à mieux comprendre en ajoutant des images ou vidéos (max 50 Mo par fichier).</p>
 
                 <div class="grid sm:grid-cols-2 gap-8">
-                    <div class="space-y-3">
-                        <label for="images" class="block text-base font-semibold text-gray-700">Images (Photos)</label>
-                        <input type="file" name="images[]" multiple accept="image/*" id="images"
-                            class="block w-full text-gray-700 border-2 border-gray-300 rounded-xl p-4 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-base file:font-semibold file:bg-indigo-500 file:text-white hover:file:bg-indigo-600 transition-all duration-200">
-                    </div>
                     <div class="space-y-3">
                         <label for="videos" class="block text-base font-semibold text-gray-700">Vidéos (Clips)</label>
                         <input type="file" name="videos[]" multiple accept="video/*" id="videos"
@@ -106,7 +84,7 @@
             {{-- Section Localisation --}}
             <div class="space-y-8 bg-gray-50 p-8 rounded-2xl border border-gray-100">
                 <h2 class="text-2xl font-bold text-gray-700 border-b-2 border-gray-200 pb-4 mb-6 flex items-center">
-                    📍 Localisation du Problème
+                    Localisation du Problème
                 </h2>
 
                 {{-- Choix mode localisation --}}
@@ -186,18 +164,149 @@
                 </div>
             </div>
 
+
+
+            <!-- Champs pour déclarant anonyme (s'affichent si Forme 1 / Urgence) -->
+            <div id="anonFields" class="hidden space-y-6 bg-white p-6 rounded-xl border border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-700">Infos du déclarant</h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <input type="text" name="declarant_name" id="declarant_name" placeholder="Nom complet"
+                        class="w-full rounded-xl border-2 border-gray-300 p-3" require />
+
+                    <input type="tel" name="declarant_phone" id="declarant_phone" placeholder="Téléphone"
+                        class="w-full rounded-xl border-2 border-gray-300 p-3" />
+
+                    <input type="email" name="declarant_email" id="declarant_email" placeholder="Email (optionnel)"
+                        class="w-full rounded-xl border-2 border-gray-300 p-3" />
+                </div>
+            </div>
+
             {{-- Soumission --}}
             <div class="text-center pt-8">
                 <button type="submit"
                     class="w-full sm:w-auto px-14 py-5 bg-indigo-600 text-white rounded-xl text-lg font-bold shadow-xl hover:bg-indigo-700 transform hover:scale-[1.02] transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50">
-                    🚀 Soumettre la Déclaration
+                    Soumettre la Déclaration
                 </button>
             </div>
         </form>
     </div>
 </div>
 
-{{-- Scripts (inchangés) --}}
+{{-- Scripts --}}
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- éléments existants ---
+    const btnUrgence = document.getElementById('btnUrgence');
+    const btnSuivi = document.getElementById('btnSuivi');
+    const urgenceInput = document.getElementById('urgence');
+    const allModeBtns = document.querySelectorAll('.mode-btn');
+
+    // nouveaux éléments
+    const anonFields = document.getElementById('anonFields'); // voir HTML ajouté
+    const declarantName = document.getElementById('declarant_name');
+    const declarantPhone = document.getElementById('declarant_phone');
+    const declarantEmail = document.getElementById('declarant_email');
+
+    // inputs media
+    const imagesInput = document.getElementById('images');
+    const videosInput = document.getElementById('videos');
+
+    // helper pour style des boutons (repris depuis ton code)
+    const updateModeStyle = (mode) => {
+        allModeBtns.forEach(btn => {
+            const isSelected = btn.getAttribute('data-mode') === mode.toString();
+            btn.classList.remove('active-mode', 'bg-red-600','hover:bg-red-700','text-white','border-indigo-500','text-indigo-600','bg-white','hover:bg-indigo-50','border-2','border-gray-300','text-gray-500');
+            // réappliquer classes en fonction du cas
+            if (isSelected && mode === 1) {
+                btn.classList.add('bg-red-600','hover:bg-red-700','text-white','border-transparent','active-mode');
+            } else if (isSelected && mode === 0) {
+                btn.classList.add('border-2','border-indigo-500','text-indigo-600','bg-white','hover:bg-indigo-50','active-mode');
+            } else if (mode === 1) {
+                btn.classList.add('border-2','border-gray-300','text-gray-500','bg-white','hover:bg-gray-100');
+            } else if (mode === 0) {
+                btn.classList.add('border-2','border-gray-300','text-gray-500','bg-white','hover:bg-gray-100');
+            }
+        });
+    };
+
+    // initialisation par défaut
+    updateModeStyle(0);
+    urgenceInput.value = 0;
+    anonFields.classList.add('hidden');
+
+    // bouton Urgence
+    btnUrgence.onclick = () => {
+        urgenceInput.value = 1;
+        updateModeStyle(1);
+        // afficher les champs anonymes
+        anonFields.classList.remove('hidden');
+        // rendre téléphone ou nom non requis mais suggéré - on ne force rien côté client
+        // modifier l'input photo pour ouvrir la caméra sur mobile
+        if (imagesInput) {
+            imagesInput.setAttribute('capture', 'environment'); // ouvre caméra arrière sur mobile
+            imagesInput.setAttribute('accept', 'image/*;capture=camera');
+        }
+        if (videosInput) {
+            videosInput.setAttribute('capture', 'camcorder');
+            videosInput.setAttribute('accept', 'video/*;capture=camcorder');
+        }
+        alert("Mode Urgence Immédiate activé ! Votre déclaration sera traitée en priorité.");
+    };
+
+    // bouton Suivi
+    btnSuivi.onclick = () => {
+        urgenceInput.value = 0;
+        updateModeStyle(0);
+        // masquer les champs anonymes (si connecté le user a déjà ses infos)
+        anonFields.classList.add('hidden');
+        // retirer attribut capture pour laisser comportement normal (desktop friendly)
+        if (imagesInput) {
+            imagesInput.removeAttribute('capture');
+            imagesInput.setAttribute('accept','image/*');
+        }
+        if (videosInput) {
+            videosInput.removeAttribute('capture');
+            videosInput.setAttribute('accept','video/*');
+        }
+        alert("Mode Avec Suivi et Détails activé !");
+    };
+
+    // -------------------------
+    // Amélioration UX: si l'utilisateur clique directement sur l'input images (sur mobile),
+    // on force la caméra si urgence active (cas où le bouton urgence a pu ne pas être cliqué)
+    // -------------------------
+    if (imagesInput) {
+        imagesInput.addEventListener('click', () => {
+            if (urgenceInput.value === '1') {
+                imagesInput.setAttribute('capture', 'environment');
+                imagesInput.setAttribute('accept','image/*;capture=camera');
+            } else {
+                imagesInput.removeAttribute('capture');
+                imagesInput.setAttribute('accept','image/*');
+            }
+        });
+    }
+    if (videosInput) {
+        videosInput.addEventListener('click', () => {
+            if (urgenceInput.value === '1') {
+                videosInput.setAttribute('capture', 'camcorder');
+                videosInput.setAttribute('accept','video/*;capture=camcorder');
+            } else {
+                videosInput.removeAttribute('capture');
+                videosInput.setAttribute('accept','video/*');
+            }
+        });
+    }
+
+    // --- Le reste de ton code (Leaflet, AJAX pour communes, etc.) reste inchangé ---
+    // ... (ici tu peux conserver le code Leaflet et fetch déjà présent dans ta vue)
+});
+</script>
+
+
 <script>
     // Initialisation du mode Urgence (Forme 2 par défaut)
     document.addEventListener('DOMContentLoaded', () => {
@@ -352,6 +461,8 @@
         });
     });
 </script>
+
+
 
 {{-- 🔹 Import de Leaflet (CSS + JS) --}}
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
