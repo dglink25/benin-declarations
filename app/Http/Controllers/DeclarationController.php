@@ -9,9 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use App\Models\User;
 
-class DeclarationController extends Controller
-{
+
+class DeclarationController extends Controller{
     /**
      * Affiche le formulaire de création d'une déclaration.
      */
@@ -21,13 +22,9 @@ class DeclarationController extends Controller
         return view('declarations.create', compact('departements'));
     }
 
-    /**
-     * Enregistre une nouvelle déclaration (urgence ou avec suivi).
-     */
     public function store(Request $request){
         try {
             $validated = $request->validate([
-                'type' => 'required|string|max:255',
                 'description' => 'required|string|max:5000',
                 'autre_type' => 'nullable|string|max:255',
                 'urgence' => 'nullable|boolean',
@@ -43,18 +40,38 @@ class DeclarationController extends Controller
                 'latitude' => 'nullable|numeric|between:-90,90',
                 'longitude' => 'nullable|numeric|between:-180,180',
 
-                'images.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:51200', // 50 Mo
+                'images.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:51200',
                 'videos.*' => 'nullable|mimetypes:video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv|max:51200',
+
+                // Champs citoyens non connectés (Forme 1)
+                'nom' => 'nullable|string|max:255',
+                'email' => 'nullable|email|max:255',
             ]);
 
-            // Associer à l'utilisateur connecté si présent
+            /**
+             * 🔹 Étape 1 : Identifier l’utilisateur
+             */
             if (Auth::check()) {
                 $validated['user_id'] = Auth::id();
+            } elseif ($request->urgence == 1) {
+                // Création d’un utilisateur temporaire
+                $user = User::create([
+                    'name' => $request->nom ?? 'Citoyen Anonyme',
+                    'email' => $request->email, // peut être nul
+                    'password' => bcrypt(str()->random(12)), // mot de passe aléatoire
+                    'role' => 'citoyen', // si tu gères des rôles
+                ]);
+                $validated['user_id'] = $user->id;
             }
 
+            /**
+             * 🔹 Étape 2 : Création de la déclaration
+             */
             $declaration = Declaration::create($validated);
 
-            // 📸 Upload des fichiers médias
+            /**
+             * 🔹 Étape 3 : Gestion des médias
+             */
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
                     $path = $image->store('uploads/images', 'public');
@@ -77,6 +94,9 @@ class DeclarationController extends Controller
                 }
             }
 
+            /**
+             * 🔹 Étape 4 : Retour utilisateur
+             */
             return redirect()
                 ->route('declarations.create')
                 ->with('success', 'Déclaration envoyée avec succès ! Merci pour votre signalement.');
@@ -86,7 +106,6 @@ class DeclarationController extends Controller
                 ->withErrors($e->validator)
                 ->withInput()
                 ->with('error', 'Erreurs de validation, veuillez vérifier les champs.');
-
         } catch (\Throwable $e) {
             Log::error('Erreur lors de la création d’une déclaration : ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
@@ -97,6 +116,12 @@ class DeclarationController extends Controller
                 ->with('error', 'Une erreur est survenue lors de l’envoi. Veuillez réessayer plus tard.');
         }
     }
+
+
+    /**
+     * Enregistre une nouvelle déclaration (urgence ou avec suivi).
+     */
+   
 
     /**
      * Affiche la liste des déclarations de l'utilisateur connecté.

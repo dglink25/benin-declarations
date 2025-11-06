@@ -44,6 +44,47 @@
             @csrf
             <input type="hidden" name="urgence" id="urgence" value="0">
 
+            {{-- Section Informations Personnelles (Forme 1 uniquement) --}}
+            <div id="userInfoSection" class="hidden space-y-8 bg-gray-50 p-8 rounded-2xl border border-gray-100">
+                <h2 class="text-2xl font-bold text-gray-700 border-b-2 border-gray-200 pb-4 mb-6 flex items-center">
+                    Informations Personnelles
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {{-- Nom --}}
+                    <div class="space-y-3">
+                        <label for="user_nom" class="block text-base font-semibold text-gray-700">Nom <span class="text-red-500">*</span></label>
+                        <input type="text" name="user_nom" id="user_nom" 
+                            class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4"
+                            placeholder="Votre nom complet">
+                    </div>
+                    
+                    {{-- Email --}}
+                    <div class="space-y-3">
+                        <label for="user_email" class="block text-base font-semibold text-gray-700">Email <span class="text-red-500">*</span></label>
+                        <input type="email" name="user_email" id="user_email" 
+                            class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4"
+                            placeholder="votre@email.com">
+                    </div>
+                    
+                    {{-- Téléphone --}}
+                    <div class="space-y-3">
+                        <label for="user_telephone" class="block text-base font-semibold text-gray-700">Téléphone</label>
+                        <input type="tel" name="user_telephone" id="user_telephone" 
+                            class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4"
+                            placeholder="Votre numéro de téléphone">
+                    </div>
+                    
+                    {{-- Adresse --}}
+                    <div class="space-y-3">
+                        <label for="user_adresse" class="block text-base font-semibold text-gray-700">Adresse</label>
+                        <input type="text" name="user_adresse" id="user_adresse" 
+                            class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4"
+                            placeholder="Votre adresse complète">
+                    </div>
+                </div>
+            </div>
+
             {{-- Section Détails du Problème --}}
             <div class="space-y-8 bg-gray-50 p-8 rounded-2xl border border-gray-100">
                 <h2 class="text-2xl font-bold text-gray-700 border-b-2 border-gray-200 pb-4 mb-6 flex items-center">
@@ -164,24 +205,6 @@
                 </div>
             </div>
 
-
-
-            <!-- Champs pour déclarant anonyme (s'affichent si Forme 1 / Urgence) -->
-            <div id="anonFields" class="hidden space-y-6 bg-white p-6 rounded-xl border border-gray-100">
-                <h3 class="text-lg font-semibold text-gray-700">Infos du déclarant</h3>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <input type="text" name="declarant_name" id="declarant_name" placeholder="Nom complet"
-                        class="w-full rounded-xl border-2 border-gray-300 p-3" require />
-
-                    <input type="tel" name="declarant_phone" id="declarant_phone" placeholder="Téléphone"
-                        class="w-full rounded-xl border-2 border-gray-300 p-3" />
-
-                    <input type="email" name="declarant_email" id="declarant_email" placeholder="Email (optionnel)"
-                        class="w-full rounded-xl border-2 border-gray-300 p-3" />
-                </div>
-            </div>
-
             {{-- Soumission --}}
             <div class="text-center pt-8">
                 <button type="submit"
@@ -194,119 +217,6 @@
 </div>
 
 {{-- Scripts --}}
-
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // --- éléments existants ---
-    const btnUrgence = document.getElementById('btnUrgence');
-    const btnSuivi = document.getElementById('btnSuivi');
-    const urgenceInput = document.getElementById('urgence');
-    const allModeBtns = document.querySelectorAll('.mode-btn');
-
-    // nouveaux éléments
-    const anonFields = document.getElementById('anonFields'); // voir HTML ajouté
-    const declarantName = document.getElementById('declarant_name');
-    const declarantPhone = document.getElementById('declarant_phone');
-    const declarantEmail = document.getElementById('declarant_email');
-
-    // inputs media
-    const imagesInput = document.getElementById('images');
-    const videosInput = document.getElementById('videos');
-
-    // helper pour style des boutons (repris depuis ton code)
-    const updateModeStyle = (mode) => {
-        allModeBtns.forEach(btn => {
-            const isSelected = btn.getAttribute('data-mode') === mode.toString();
-            btn.classList.remove('active-mode', 'bg-red-600','hover:bg-red-700','text-white','border-indigo-500','text-indigo-600','bg-white','hover:bg-indigo-50','border-2','border-gray-300','text-gray-500');
-            // réappliquer classes en fonction du cas
-            if (isSelected && mode === 1) {
-                btn.classList.add('bg-red-600','hover:bg-red-700','text-white','border-transparent','active-mode');
-            } else if (isSelected && mode === 0) {
-                btn.classList.add('border-2','border-indigo-500','text-indigo-600','bg-white','hover:bg-indigo-50','active-mode');
-            } else if (mode === 1) {
-                btn.classList.add('border-2','border-gray-300','text-gray-500','bg-white','hover:bg-gray-100');
-            } else if (mode === 0) {
-                btn.classList.add('border-2','border-gray-300','text-gray-500','bg-white','hover:bg-gray-100');
-            }
-        });
-    };
-
-    // initialisation par défaut
-    updateModeStyle(0);
-    urgenceInput.value = 0;
-    anonFields.classList.add('hidden');
-
-    // bouton Urgence
-    btnUrgence.onclick = () => {
-        urgenceInput.value = 1;
-        updateModeStyle(1);
-        // afficher les champs anonymes
-        anonFields.classList.remove('hidden');
-        // rendre téléphone ou nom non requis mais suggéré - on ne force rien côté client
-        // modifier l'input photo pour ouvrir la caméra sur mobile
-        if (imagesInput) {
-            imagesInput.setAttribute('capture', 'environment'); // ouvre caméra arrière sur mobile
-            imagesInput.setAttribute('accept', 'image/*;capture=camera');
-        }
-        if (videosInput) {
-            videosInput.setAttribute('capture', 'camcorder');
-            videosInput.setAttribute('accept', 'video/*;capture=camcorder');
-        }
-        alert("Mode Urgence Immédiate activé ! Votre déclaration sera traitée en priorité.");
-    };
-
-    // bouton Suivi
-    btnSuivi.onclick = () => {
-        urgenceInput.value = 0;
-        updateModeStyle(0);
-        // masquer les champs anonymes (si connecté le user a déjà ses infos)
-        anonFields.classList.add('hidden');
-        // retirer attribut capture pour laisser comportement normal (desktop friendly)
-        if (imagesInput) {
-            imagesInput.removeAttribute('capture');
-            imagesInput.setAttribute('accept','image/*');
-        }
-        if (videosInput) {
-            videosInput.removeAttribute('capture');
-            videosInput.setAttribute('accept','video/*');
-        }
-        alert("Mode Avec Suivi et Détails activé !");
-    };
-
-    // -------------------------
-    // Amélioration UX: si l'utilisateur clique directement sur l'input images (sur mobile),
-    // on force la caméra si urgence active (cas où le bouton urgence a pu ne pas être cliqué)
-    // -------------------------
-    if (imagesInput) {
-        imagesInput.addEventListener('click', () => {
-            if (urgenceInput.value === '1') {
-                imagesInput.setAttribute('capture', 'environment');
-                imagesInput.setAttribute('accept','image/*;capture=camera');
-            } else {
-                imagesInput.removeAttribute('capture');
-                imagesInput.setAttribute('accept','image/*');
-            }
-        });
-    }
-    if (videosInput) {
-        videosInput.addEventListener('click', () => {
-            if (urgenceInput.value === '1') {
-                videosInput.setAttribute('capture', 'camcorder');
-                videosInput.setAttribute('accept','video/*;capture=camcorder');
-            } else {
-                videosInput.removeAttribute('capture');
-                videosInput.setAttribute('accept','video/*');
-            }
-        });
-    }
-
-    // --- Le reste de ton code (Leaflet, AJAX pour communes, etc.) reste inchangé ---
-    // ... (ici tu peux conserver le code Leaflet et fetch déjà présent dans ta vue)
-});
-</script>
-
-
 <script>
     // Initialisation du mode Urgence (Forme 2 par défaut)
     document.addEventListener('DOMContentLoaded', () => {
@@ -314,6 +224,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const btnSuivi = document.getElementById('btnSuivi');
         const urgenceInput = document.getElementById('urgence');
         const allModeBtns = document.querySelectorAll('.mode-btn');
+
+        // Fonction pour gérer l'affichage des infos utilisateur
+        const toggleUserInfoSection = (mode) => {
+            const userInfoSection = document.getElementById('userInfoSection');
+            const userFields = ['user_nom', 'user_email', 'user_telephone', 'user_adresse'];
+            
+            if (mode === 1) {
+                // Forme 1 - Afficher et rendre requis
+                userInfoSection.classList.remove('hidden');
+                userFields.forEach(field => {
+                    const input = document.getElementById(field);
+                    if (field === 'user_nom' || field === 'user_email') {
+                        input.required = true;
+                    }
+                });
+            } 
+            else {
+                // Forme 2 - Cacher et rendre non requis
+                userInfoSection.classList.add('hidden');
+                userFields.forEach(field => {
+                    const input = document.getElementById(field);
+                    input.required = false;
+                });
+            }
+        };
 
         // Fonction pour mettre à jour le style des boutons
         const updateModeStyle = (mode) => {
@@ -335,6 +270,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     btnUrgence.classList.add('border-2', 'border-gray-300', 'text-gray-500', 'bg-white', 'hover:bg-gray-100');
                 }
             });
+            
+            // Gérer l'affichage des infos utilisateur
+            toggleUserInfoSection(mode);
         };
         
         // Initialiser avec le mode Suivi (0) par défaut
@@ -344,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnUrgence.onclick = () => {
             urgenceInput.value = 1;
             updateModeStyle(1);
-            alert("Mode Urgence Immédiate activé ! Votre déclaration sera traitée en priorité.");
+            alert("Mode Urgence Immédiate activé ! Votre déclaration sera traitée en priorité.\n\nVous devez fournir vos informations personnelles.");
         };
         btnSuivi.onclick = () => {
             urgenceInput.value = 0;
@@ -352,12 +290,166 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Mode Avec Suivi et Détails activé !");
         };
 
+        // Fonction pour gérer l'input d'images avec caméra
+        const setupImageInput = () => {
+            const imageInput = document.getElementById('images');
+            
+            imageInput.addEventListener('click', function(e) {
+                // Vérifier si on est sur mobile et si la caméra est disponible
+                if (/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) {
+                    e.preventDefault();
+                    
+                    // Vérifier si l'API MediaDevices est disponible
+                    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                        // Demander à l'utilisateur ce qu'il préfère
+                        const choice = confirm(
+                            "Voulez-vous utiliser la caméra pour prendre une photo ?\n\n" +
+                            "OK : Prendre une photo avec la caméra\n" +
+                            "Annuler : Choisir depuis les fichiers"
+                        );
+                        
+                        if (choice) {
+                            openCamera();
+                        } else {
+                            openFileSelection();
+                        }
+                    } else {
+                        openFileSelection();
+                    }
+                }
+            });
+        };
+
+        // Fonction pour ouvrir la caméra
+        const openCamera = () => {
+            const constraints = {
+                video: { 
+                    facingMode: 'environment', // Caméra arrière
+                    width: { ideal: 1920 },
+                    height: { ideal: 1080 }
+                },
+                audio: false
+            };
+
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then(function(stream) {
+                    showCameraModal(stream);
+                })
+                .catch(function(error) {
+                    console.error('Erreur caméra:', error);
+                    alert("Impossible d'accéder à la caméra. Utilisation de la sélection de fichiers.");
+                    openFileSelection();
+                });
+        };
+
+        // Fonction pour afficher la modal de caméra
+        const showCameraModal = (stream) => {
+            // Créer la modal
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Prendre une photo</h3>
+                    
+                    <video id="cameraPreview" autoplay playsinline class="w-full h-64 bg-gray-200 rounded-lg mb-4"></video>
+                    
+                    <div class="flex justify-between gap-3">
+                        <button type="button" id="captureBtn" 
+                            class="flex-1 bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors">
+                            Prendre la photo
+                        </button>
+                        <button type="button" id="cancelCameraBtn" 
+                            class="flex-1 bg-gray-500 text-white py-3 rounded-lg font-semibold hover:bg-gray-600 transition-colors">
+                            Annuler
+                        </button>
+                    </div>
+                    
+                    <canvas id="photoCanvas" class="hidden"></canvas>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            const video = modal.querySelector('#cameraPreview');
+            const canvas = modal.querySelector('#photoCanvas');
+            const captureBtn = modal.querySelector('#captureBtn');
+            const cancelBtn = modal.querySelector('#cancelCameraBtn');
+            
+            video.srcObject = stream;
+            
+            // Capturer la photo
+            captureBtn.addEventListener('click', function() {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0);
+                
+                // Convertir en blob et ajouter au input file
+                canvas.toBlob(function(blob) {
+                    const file = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
+                    addFileToInput(file);
+                    
+                    // Fermer la modal et arrêter la caméra
+                    stream.getTracks().forEach(track => track.stop());
+                    modal.remove();
+                }, 'image/jpeg', 0.8);
+            });
+            
+            // Annuler
+            cancelBtn.addEventListener('click', function() {
+                stream.getTracks().forEach(track => track.stop());
+                modal.remove();
+                openFileSelection();
+            });
+        };
+
+        // Fonction pour ouvrir la sélection de fichiers normale
+        const openFileSelection = () => {
+            const input = document.getElementById('images');
+            const event = new MouseEvent('click', {
+                view: window,
+                bubbles: true,
+                cancelable: true
+            });
+            input.dispatchEvent(event);
+        };
+
+        // Fonction pour ajouter un fichier au input
+        const addFileToInput = (file) => {
+            const input = document.getElementById('images');
+            
+            // Créer un nouveau DataTransfer pour gérer les fichiers
+            const dataTransfer = new DataTransfer();
+            
+            // Ajouter les fichiers existants
+            for (let i = 0; i < input.files.length; i++) {
+                dataTransfer.items.add(input.files[i]);
+            }
+            
+            // Ajouter le nouveau fichier
+            dataTransfer.items.add(file);
+            
+            // Mettre à jour les fichiers du input
+            input.files = dataTransfer.files;
+            
+            // Déclencher un événement change pour mettre à jour l'interface
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+            
+            // Afficher un message de confirmation
+            alert("Photo ajoutée avec succès !");
+        };
+
+        // Initialiser la configuration des images
+        setupImageInput();
+
         // Animation champ "autre"
         const typeSelect = document.getElementById('type');
         const autreTypeContainer = document.getElementById('autreTypeContainer');
-        typeSelect.addEventListener('change', () => {
-            autreTypeContainer.classList.toggle('hidden', typeSelect.value !== 'autre');
-        });
+        if (typeSelect) {
+            typeSelect.addEventListener('change', () => {
+                autreTypeContainer.classList.toggle('hidden', typeSelect.value !== 'autre');
+            });
+        }
 
         // Localisation manuelle/auto
         const localisationRadios = document.getElementsByName('localisation_option');
@@ -411,7 +503,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.getElementById('latitude').value = lat;
                     document.getElementById('longitude').value = lon;
                     initLeaflet(lat, lon);
-                    btnGeo.textContent = "Position détectée ✅ (Glisser le marqueur si besoin)";
+                    btnGeo.textContent = "Position détectée (Glisser le marqueur si besoin)";
                 }, () => {
                     alert("Impossible d'obtenir votre position. Veuillez vérifier les permissions.");
                     btnGeo.textContent = "Réessayer la géolocalisation";
@@ -462,8 +554,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 </script>
 
-
-
 {{-- 🔹 Import de Leaflet (CSS + JS) --}}
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -475,6 +565,33 @@ document.addEventListener('DOMContentLoaded', () => {
         height: 320px; 
         border-radius: 12px;
         animation: fadeInMap 1s ease-in-out;
+    }
+
+    /* Styles pour la modal caméra */
+    .fixed {
+        position: fixed;
+    }
+    .inset-0 {
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+    .bg-opacity-75 {
+        --tw-bg-opacity: 0.75;
+    }
+    .z-50 {
+        z-index: 50;
+    }
+
+    /* Animation pour la modal */
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    .fixed.inset-0 {
+        animation: modalFadeIn 0.2s ease-out;
     }
 
     /* Animations de base */
