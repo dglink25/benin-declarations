@@ -11,10 +11,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use Illuminate\Support\Str;
-
 use App\Models\Commune;
 use App\Models\Arrondissement;
-
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -100,6 +99,14 @@ class DeclarationController extends Controller{
          */
         $declaration = Declaration::create($validated);
 
+        DB::table('declaration_user')->insert([
+            'declaration_id' => $declaration->id,
+            'user_id' => $validated['user_id'],
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+
         /**
          * 🔹 Étape 4 : Gestion des médias
          */
@@ -146,7 +153,7 @@ class DeclarationController extends Controller{
 
             return back()
                 ->withInput()
-                ->with('error', 'Une erreur est survenue lors de l\'envoi. Veuillez réessayer plus tard.');
+                ->with('error', 'Une erreur est survenue lors de l\'envoi. Veuillez réessayer plus tard.' . $e->getMessage());
         }
     }
 

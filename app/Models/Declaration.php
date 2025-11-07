@@ -70,6 +70,12 @@ class Declaration extends Model
         return $this->hasMany(Media::class);
     }
 
+    public function users(){
+        return $this->belongsToMany(User::class, 'declaration_user')
+                    ->withTimestamps();
+    }
+
+
     /**
      * 🔗 Relation avec les médias (images/vidéos)
      */
