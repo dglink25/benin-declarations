@@ -2,10 +2,6 @@
 
 @section('content')
 <div class="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-<br>
-<br>
-<br>
-
     {{-- En-tête --}}
     <div class="max-w-4xl mx-auto text-center mb-12 animate-fadeInSlow">
         <h1 class="text-3xl sm:text-5xl font-extrabold text-gray-800 tracking-tight">
@@ -324,10 +320,10 @@
 
             {{-- Soumission --}}
             <div class="text-center pt-8">
-                <button type="submit" id="submitBtn"
-                    class="w-full sm:w-auto px-14 py-5 bg-indigo-600 text-white rounded-xl text-lg font-bold shadow-xl hover:bg-indigo-700 transform hover:scale-[1.02] transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50">
-                    Soumettre la Déclaration
-                </button>
+               <button type="submit" id="submitBtn"
+                class="px-8 py-4 bg-indigo-600 text-white rounded-lg font-semibold shadow-md hover:bg-indigo-700 transform hover:scale-[1.02] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-sm">
+               <strong>Soumettre la Déclaration</strong>
+            </button>
             </div>
         </form>
     </div>
