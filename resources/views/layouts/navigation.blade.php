@@ -22,7 +22,7 @@
                     </x-nav-link>
 
                     {{-- Historique --}}
-                    <x-nav-link :href="route('declarations.index')" :active="request()->routeIs('declarations.index')">
+                    <x-nav-link :href="route('declarations.mes-declarations')" :active="request()->routeIs('declarations.index')">
                         {{ __('Mes déclarations') }}
                     </x-nav-link>
                 </div>
@@ -108,7 +108,7 @@
                 {{ __('Déclarer un problème') }}
             </x-responsive-nav-link>
 
-            <x-responsive-nav-link :href="route('declarations.index')" :active="request()->routeIs('declarations.index')">
+            <x-responsive-nav-link :href="route('declarations.mes-declarations')" :active="request()->routeIs('declarations.mes-declarations')">
                 {{ __('Mes déclarations') }}
             </x-responsive-nav-link>
             @endauth

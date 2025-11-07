@@ -167,7 +167,7 @@
                         {{-- Département --}}
                         <div class="space-y-3">
                             <label for="departement" class="block text-base font-semibold text-gray-700">Département <span class="text-red-500">*</span></label>
-                            <select name="departement_id" id="departement" required class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4">
+                            <select name="departement_id" id="departement" class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4">
                                 <option value="">-- Sélectionnez --</option>
                                 @foreach($departements as $dep)
                                     <option value="{{ $dep->id }}">{{ $dep->name }}</option>
@@ -176,8 +176,8 @@
                         </div>
                         {{-- Commune --}}
                         <div class="space-y-3">
-                            <label for="commune" class="block text-base font-semibold text-gray-700">Commune <span class="text-red-500">*</span></label>
-                            <select name="commune_id" id="commune" required class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4" disabled>
+                            <label for="commune" class="block text-base font-semibold text-gray-700">Commune</label>
+                            <select name="commune_id" id="commune" class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4" disabled>
                                 <option value="">-- Choisir un département --</option>
                             </select>
                         </div>
@@ -214,47 +214,65 @@
                             <span>🌐</span>
                             <span>Activer la géolocalisation</span>
                         </button>
+                        <p class="text-sm text-gray-500 mt-2">
+                            Cliquez pour détecter automatiquement votre position. Assurez-vous d'autoriser l'accès à votre localisation.
+                        </p>
+                    </div>
+
+                    {{-- État de la géolocalisation --}}
+                    <div id="geoStatus" class="hidden p-4 rounded-lg bg-yellow-50 border border-yellow-200">
+                        <div class="flex items-center gap-3">
+                            <div class="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent"></div>
+                            <span class="text-yellow-700 font-medium" id="geoStatusText">Détection de la position en cours...</span>
+                        </div>
                     </div>
                     
                     {{-- Champs de coordonnées visibles --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-3">
-                            <label for="latitude" class="block text-base font-semibold text-gray-700">Latitude <span class="text-red-500">*</span></label>
-                            <input type="text" name="latitude" id="latitude" required
-                                class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4"
+                            <label for="latitude" class="block text-base font-semibold text-gray-700">Latitude</label>
+                            <input type="text" name="latitude" id="latitude"
+                                class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4 bg-gray-50"
                                 placeholder="Latitude GPS" readonly>
                         </div>
                         <div class="space-y-3">
-                            <label for="longitude" class="block text-base font-semibold text-gray-700">Longitude <span class="text-red-500">*</span></label>
-                            <input type="text" name="longitude" id="longitude" required
-                                class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4"
+                            <label for="longitude" class="block text-base font-semibold text-gray-700">Longitude</label>
+                            <input type="text" name="longitude" id="longitude"
+                                class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4 bg-gray-50"
                                 placeholder="Longitude GPS" readonly>
                         </div>
                     </div>
 
                     {{-- Carte --}}
                     <div class="space-y-3">
-                        <div id="map" class="w-full h-80 rounded-2xl shadow-lg border-2 border-gray-300 transition-all duration-500 ease-in-out"></div>
+                        <label class="block text-base font-semibold text-gray-700">Carte de localisation</label>
+                        <div id="map" class="w-full h-80 rounded-2xl shadow-lg border-2 border-gray-300 transition-all duration-500 ease-in-out bg-gray-100 flex items-center justify-center">
+                            <div class="text-center text-gray-500">
+                                <div class="text-4xl mb-2">🌍</div>
+                                <p>La carte s'affichera ici après activation de la géolocalisation</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-500">Glissez le marqueur pour ajuster précisément votre position</p>
                     </div>
 
                     {{-- Lien de localisation --}}
                     <div class="space-y-3">
                         <label for="lien_localisation" class="block text-base font-semibold text-gray-700">Lien de localisation (Google Maps)</label>
                         <input type="text" name="lien_localisation" id="lien_localisation"
-                            class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4"
+                            class="w-full rounded-xl border-2 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 p-4 bg-gray-50"
                             placeholder="Lien Google Maps" readonly>
                     </div>
 
                     {{-- Informations géocodées --}}
                     <div id="geoInfo" class="hidden space-y-6 p-6 bg-blue-50 rounded-2xl border-2 border-blue-200">
                         <h3 class="text-xl font-bold text-blue-800 flex items-center gap-2">
-                            📍 Informations de localisation détectées
+                            Informations de localisation détectées
                         </h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {{-- Département détecté --}}
                             <div class="space-y-3">
-                                <label class="block text-sm font-semibold text-blue-700">Département détecté</label>
+                                <label class="block text-sm font-semibold text-blue-700">Département</label>
                                 <div class="flex items-center gap-3">
                                     <input type="text" id="detected_departement" 
                                         class="w-full rounded-xl border-2 border-blue-300 bg-white p-4 font-medium text-blue-800"
@@ -265,7 +283,7 @@
                             
                             {{-- Commune détectée --}}
                             <div class="space-y-3">
-                                <label class="block text-sm font-semibold text-blue-700">Commune détectée</label>
+                                <label class="block text-sm font-semibold text-blue-700">Commune</label>
                                 <div class="flex items-center gap-3">
                                     <input type="text" id="detected_commune" 
                                         class="w-full rounded-xl border-2 border-blue-300 bg-white p-4 font-medium text-blue-800"
@@ -276,7 +294,7 @@
                             
                             {{-- Arrondissement détecté --}}
                             <div class="space-y-3">
-                                <label class="block text-sm font-semibold text-blue-700">Arrondissement détecté</label>
+                                <label class="block text-sm font-semibold text-blue-700">Arrondissement</label>
                                 <div class="flex items-center gap-3">
                                     <input type="text" id="detected_arrondissement" 
                                         class="w-full rounded-xl border-2 border-blue-300 bg-white p-4 font-medium text-blue-800"
@@ -288,14 +306,13 @@
 
                         {{-- Adresse complète --}}
                         <div class="space-y-3">
-                            <label class="block text-sm font-semibold text-blue-700">Adresse complète détectée</label>
+                            <label class="block text-sm font-semibold text-blue-700">Adresse complète</label>
                             <input type="text" id="detected_adresse" 
                                 class="w-full rounded-xl border-2 border-blue-300 bg-white p-4 font-medium text-blue-800"
                                 readonly>
                         </div>
 
                         <div class="flex items-center gap-2 text-blue-600">
-                            <span>✅</span>
                             <span class="text-sm">Ces informations ont été automatiquement détectées à partir de votre position GPS</span>
                         </div>
                     </div>
@@ -304,7 +321,7 @@
 
             {{-- Soumission --}}
             <div class="text-center pt-8">
-                <button type="submit"
+                <button type="submit" id="submitBtn"
                     class="w-full sm:w-auto px-14 py-5 bg-indigo-600 text-white rounded-xl text-lg font-bold shadow-xl hover:bg-indigo-700 transform hover:scale-[1.02] transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50">
                     Soumettre la Déclaration
                 </button>
@@ -319,12 +336,26 @@
         // Variables globales
         let map, marker;
         let currentLat, currentLon;
+        let isGeolocationActive = false;
 
         // Initialisation du mode Urgence (Forme 2 par défaut)
         const btnUrgence = document.getElementById('btnUrgence');
         const btnSuivi = document.getElementById('btnSuivi');
         const urgenceInput = document.getElementById('urgence');
         const allModeBtns = document.querySelectorAll('.mode-btn');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Fonction pour mettre à jour l'état du bouton de soumission
+        const updateSubmitButton = () => {
+            const isManualLocation = document.querySelector('input[name="localisation_option"]:checked').value === 'manuelle';
+            const hasManualLocation = document.getElementById('departement').value !== '';
+            const hasAutoLocation = isGeolocationActive && document.getElementById('latitude').value !== '';
+            
+            // Pour la géolocalisation automatique, on n'exige pas de département
+            const canSubmit = (isManualLocation && hasManualLocation) || (!isManualLocation && hasAutoLocation);
+            
+            console.log('Manual location:', isManualLocation, 'Has manual:', hasManualLocation, 'Has auto:', hasAutoLocation, 'Can submit:', canSubmit);
+        };
 
         // Fonction pour gérer l'affichage des infos utilisateur
         const toggleUserInfoSection = (mode) => {
@@ -349,6 +380,7 @@
                     input.required = false;
                 });
             }
+            updateSubmitButton();
         };
 
         // Fonction pour mettre à jour le style des boutons
@@ -530,43 +562,67 @@
         const locManuelle = document.getElementById('localisationManuelle');
         const locAuto = document.getElementById('localisationAuto');
         const btnGeo = document.getElementById('btnGeo');
+        const geoStatus = document.getElementById('geoStatus');
+        const geoStatusText = document.getElementById('geoStatusText');
 
         localisationRadios.forEach(radio => {
             radio.addEventListener('change', () => {
                 if (radio.value === 'auto' && radio.checked) {
                     locAuto.classList.remove('hidden');
                     locManuelle.classList.add('hidden');
+                    // Supprimer les attributs required des champs manuels
+                    document.getElementById('departement').removeAttribute('required');
+                    document.getElementById('commune').removeAttribute('required');
                 } else {
                     locAuto.classList.add('hidden');
                     locManuelle.classList.remove('hidden');
+                    // Remettre les required pour la localisation manuelle
+                    document.getElementById('departement').setAttribute('required', 'required');
                 }
+                updateSubmitButton();
             });
         });
 
         // Fonction d'initialisation Leaflet
         function initLeaflet(lat, lon) {
-            if (!map) {
-                map = L.map('map').setView([lat, lon], 15);
+            // Vider la carte d'abord
+            const mapContainer = document.getElementById('map');
+            mapContainer.innerHTML = '';
+            
+            map = L.map('map').setView([lat, lon], 16);
 
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-                }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+            }).addTo(map);
 
-                marker = L.marker([lat, lon], { draggable: true })
-                    .addTo(map)
-                    .bindPopup('Votre position actuelle<br>Glissez pour ajuster')
-                    .openPopup();
+            // Marqueur personnalisé pour plus de précision
+            marker = L.marker([lat, lon], { 
+                draggable: true,
+                icon: L.divIcon({
+                    className: 'custom-marker',
+                    html: '<div style="background-color: #3b82f6; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.3);"></div>',
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10]
+                })
+            })
+            .addTo(map)
+            .bindPopup('Votre position actuelle<br><small>Glissez le marqueur pour ajuster précisément</small>')
+            .openPopup();
 
-                marker.on('moveend', async function(e) {
-                    const { lat, lng } = e.target.getLatLng();
-                    updateCoordinates(lat, lng);
-                    await reverseGeocode(lat, lng);
-                });
-            } else {
-                map.setView([lat, lon], 15);
-                marker.setLatLng([lat, lon]);
-            }
+            marker.on('moveend', async function(e) {
+                const { lat, lng } = e.target.getLatLng();
+                updateCoordinates(lat, lng);
+                await reverseGeocode(lat, lng);
+            });
+
+            // Ajouter un cercle de précision
+            L.circle([lat, lon], {
+                color: '#3b82f6',
+                fillColor: '#3b82f6',
+                fillOpacity: 0.1,
+                radius: 20 // 20m de rayon pour indiquer la précision
+            }).addTo(map);
         }
 
         // Fonction pour mettre à jour les coordonnées
@@ -576,16 +632,20 @@
             
             document.getElementById('latitude').value = lat.toFixed(6);
             document.getElementById('longitude').value = lng.toFixed(6);
-            document.getElementById('lien_localisation').value = `https://www.google.com/maps?q=${lat},${lng}`;
+            document.getElementById('lien_localisation').value = `https://www.google.com/maps?q=${lat},${lng}&z=16`;
+            
+            isGeolocationActive = true;
+            updateSubmitButton();
+            
+            console.log('Coordinates updated:', lat, lng, 'isGeolocationActive:', isGeolocationActive);
         }
 
-        // Fonction de géocodage inverse (Nominatim)
+        // FONCTION MANQUANTE : Géocodage inverse
         async function reverseGeocode(lat, lng) {
             const geoInfo = document.getElementById('geoInfo');
-            const btnGeo = document.getElementById('btnGeo');
             
             try {
-                btnGeo.innerHTML = '<span>🔄</span><span>Récupération des informations...</span>';
+                geoStatusText.textContent = "Récupération des informations d'adresse...";
                 
                 const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
                 const data = await response.json();
@@ -593,10 +653,10 @@
                 if (data && data.address) {
                     const address = data.address;
                     
-                    // Récupérer les informations d'adresse
+                    // Récupérer les informations d'adresse avec meilleure précision
                     const departement = address.state || address.county || address.region || 'Non spécifié';
                     const commune = address.city || address.town || address.village || address.municipality || 'Non spécifié';
-                    const arrondissement = address.suburb || address.city_district || 'Non spécifié';
+                    const arrondissement = address.suburb || address.city_district || address.borough || 'Non spécifié';
                     const quartier = address.neighbourhood || address.quarter || '';
                     const rue = address.road || '';
                     const numero = address.house_number || '';
@@ -621,86 +681,132 @@
                     // Essayer de trouver les IDs correspondants dans la base de données
                     await findMatchingLocationIds(departement, commune, arrondissement);
                     
-                    btnGeo.innerHTML = '<span>✅</span><span>Position détectée (Glisser le marqueur si besoin)</span>';
+                    geoStatusText.textContent = "Position détectée avec succès !";
+                    setTimeout(() => {
+                        geoStatus.classList.add('hidden');
+                    }, 2000);
+                    
+                    console.log('Reverse geocoding successful');
                 }
             } catch (error) {
                 console.error('Erreur géocodage:', error);
-                btnGeo.innerHTML = '<span>🌐</span><span>Activer la géolocalisation</span>';
-                alert('Erreur lors de la récupération des informations de localisation.');
+                geoStatusText.textContent = "Erreur lors de la récupération des informations de localisation.";
+                setTimeout(() => {
+                    geoStatus.classList.add('hidden');
+                }, 3000);
             }
         }
 
         // Fonction pour trouver les IDs correspondants
         async function findMatchingLocationIds(departement, commune, arrondissement) {
             try {
+                console.log('Recherche des IDs pour:', { departement, commune, arrondissement });
+
                 // Recherche du département
-                const depResponse = await fetch(`/find-departement?name=${encodeURIComponent(departement)}`);
-                if (depResponse.ok) {
-                    const depData = await depResponse.json();
-                    if (depData.id) {
-                        document.getElementById('detected_departement_id').value = depData.id;
+                if (departement !== 'Non spécifié') {
+                    const depResponse = await fetch(`/find-departement?name=${encodeURIComponent(departement)}`);
+                    if (depResponse.ok) {
+                        const depData = await depResponse.json();
+                        console.log('Résultat recherche département:', depData);
+                        if (depData.id) {
+                            document.getElementById('detected_departement_id').value = depData.id;
+                            console.log('Département ID trouvé:', depData.id);
+                        } else {
+                            console.log('Aucun département trouvé pour:', departement);
+                        }
                     }
                 }
 
                 // Recherche de la commune
-                const comResponse = await fetch(`/find-commune?name=${encodeURIComponent(commune)}&departement=${encodeURIComponent(departement)}`);
-                if (comResponse.ok) {
-                    const comData = await comResponse.json();
-                    if (comData.id) {
-                        document.getElementById('detected_commune_id').value = comData.id;
+                if (commune !== 'Non spécifié') {
+                    const comResponse = await fetch(`/find-commune?name=${encodeURIComponent(commune)}&departement=${encodeURIComponent(departement)}`);
+                    if (comResponse.ok) {
+                        const comData = await comResponse.json();
+                        console.log('Résultat recherche commune:', comData);
+                        if (comData.id) {
+                            document.getElementById('detected_commune_id').value = comData.id;
+                            console.log('Commune ID trouvé:', comData.id);
+                        } else {
+                            console.log('Aucune commune trouvée pour:', commune);
+                        }
                     }
                 }
 
                 // Recherche de l'arrondissement
-                const arrResponse = await fetch(`/find-arrondissement?name=${encodeURIComponent(arrondissement)}&commune=${encodeURIComponent(commune)}`);
-                if (arrResponse.ok) {
-                    const arrData = await arrResponse.json();
-                    if (arrData.id) {
-                        document.getElementById('detected_arrondissement_id').value = arrData.id;
+                if (arrondissement !== 'Non spécifié') {
+                    const arrResponse = await fetch(`/find-arrondissement?name=${encodeURIComponent(arrondissement)}&commune=${encodeURIComponent(commune)}`);
+                    if (arrResponse.ok) {
+                        const arrData = await arrResponse.json();
+                        console.log('Résultat recherche arrondissement:', arrData);
+                        if (arrData.id) {
+                            document.getElementById('detected_arrondissement_id').value = arrData.id;
+                            console.log('Arrondissement ID trouvé:', arrData.id);
+                        } else {
+                            console.log('Aucun arrondissement trouvé pour:', arrondissement);
+                        }
                     }
                 }
+
             } catch (error) {
                 console.error('Erreur recherche IDs:', error);
             }
         }
 
-        // Bouton de géolocalisation
+        // Bouton de géolocalisation amélioré
         btnGeo.addEventListener('click', () => {
             if (navigator.geolocation) {
-                btnGeo.innerHTML = '<span>📍</span><span>Recherche de la position...</span>';
-                navigator.geolocation.getCurrentPosition(async pos => {
-                    const lat = pos.coords.latitude;
-                    const lon = pos.coords.longitude;
-                    
-                    updateCoordinates(lat, lon);
-                    initLeaflet(lat, lon);
-                    await reverseGeocode(lat, lon);
-                    
-                }, (error) => {
-                    console.error('Erreur géolocalisation:', error);
-                    let message = "Impossible d'obtenir votre position. ";
-                    
-                    switch(error.code) {
-                        case error.PERMISSION_DENIED:
-                            message += "Vous avez refusé l'accès à la géolocalisation.";
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            message += "Les informations de localisation sont indisponibles.";
-                            break;
-                        case error.TIMEOUT:
-                            message += "La demande de localisation a expiré.";
-                            break;
-                        default:
-                            message += "Erreur inconnue.";
+                geoStatus.classList.remove('hidden');
+                geoStatusText.textContent = "Détection de la position en cours...";
+                btnGeo.disabled = true;
+                
+                navigator.geolocation.getCurrentPosition(
+                    async pos => {
+                        const lat = pos.coords.latitude;
+                        const lon = pos.coords.longitude;
+                        const accuracy = pos.coords.accuracy;
+                        
+                        geoStatusText.textContent = `Position détectée (précision: ${Math.round(accuracy)}m) - Traitement...`;
+                        
+                        updateCoordinates(lat, lon);
+                        initLeaflet(lat, lon);
+                        await reverseGeocode(lat, lon);
+                        
+                        btnGeo.disabled = false;
+                        btnGeo.innerHTML = '<span>Position détectée</span>';
+                        btnGeo.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                        btnGeo.classList.add('bg-green-600', 'hover:bg-green-700');
+                        
+                    }, 
+                    (error) => {
+                        console.error('Erreur géolocalisation:', error);
+                        let message = "Impossible d'obtenir votre position. ";
+                        
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                message += "Vous avez refusé l'accès à la géolocalisation. Veuillez autoriser l'accès dans les paramètres de votre navigateur.";
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                message += "Les informations de localisation sont indisponibles. Vérifiez votre connexion GPS.";
+                                break;
+                            case error.TIMEOUT:
+                                message += "La demande de localisation a expiré. Veuillez réessayer.";
+                                break;
+                            default:
+                                message += "Erreur inconnue. Veuillez réessayer.";
+                        }
+                        
+                        geoStatusText.textContent = message;
+                        setTimeout(() => {
+                            geoStatus.classList.add('hidden');
+                        }, 5000);
+                        btnGeo.disabled = false;
+                    }, 
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 15000, // 15 secondes de timeout
+                        maximumAge: 60000 // Ne pas utiliser une position de plus d'1 minute
                     }
-                    
-                    alert(message);
-                    btnGeo.innerHTML = '<span>🌐</span><span>Activer la géolocalisation</span>';
-                }, {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 60000
-                });
+                );
             } else {
                 alert("La géolocalisation n'est pas supportée par ce navigateur.");
             }
@@ -727,6 +833,7 @@
             } else {
                 communeSelect.innerHTML = '<option value="">-- Choisir un département --</option>';
             }
+            updateSubmitButton();
         });
 
         communeSelect.addEventListener('change', async function() {
@@ -743,7 +850,16 @@
             } else {
                 arrondissementSelect.innerHTML = '<option value="">-- Choisir une commune --</option>';
             }
+            updateSubmitButton();
         });
+
+        // Écouter les changements sur les champs de localisation manuelle
+        document.querySelectorAll('#localisationManuelle select, #localisationManuelle input').forEach(field => {
+            field.addEventListener('change', updateSubmitButton);
+        });
+
+        // Initialiser l'état du bouton
+        updateSubmitButton();
     });
 </script>
 
@@ -811,6 +927,12 @@
     @keyframes slideDown {
         from { opacity: 0; transform: translateY(-10px); }
         to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Style pour le marqueur personnalisé */
+    .custom-marker {
+        background: transparent !important;
+        border: none !important;
     }
 </style>
 @endsection

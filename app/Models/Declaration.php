@@ -23,7 +23,8 @@ class Declaration extends Model
         'maison',
         'latitude', 
         'longitude', 
-        'statut'
+        'statut',
+        'lien_localisation'
     ];
 
     public function medias(){
@@ -61,6 +62,12 @@ class Declaration extends Model
     public function arrondissement()
     {
         return $this->belongsTo(Arrondissement::class, 'arrondissement_id');
+    }
+
+    // 🔹 Relation avec les médias
+    public function media()
+    {
+        return $this->hasMany(Media::class);
     }
 
     /**
