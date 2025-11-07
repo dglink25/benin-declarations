@@ -1,156 +1,222 @@
-<nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
-                    </a>
-                </div>
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" style="background-color: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);">
+    <div class="container">
+       <!-- Logo avec image -->
+        <a class="navbar-brand" href="{{ Auth::check() ? route('dashboard') : url('/') }}">
+            <img src="{{ asset('images/CITINOVA1.png') }}" alt="CITINOVA" class="logo-img" style="height: 40px;">
+        </a>
+        <!-- Bouton hamburger -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-                    {{-- Lien vers Déclaration --}}
-                    <x-nav-link :href="route('declarations.create')" :active="request()->routeIs('declarations.create')">
-                        {{ __('Déclarer un problème') }}
-                    </x-nav-link>
-
-                    {{-- Historique --}}
-                    <x-nav-link :href="route('declarations.index')" :active="request()->routeIs('declarations.index')">
-                        {{ __('Mes déclarations') }}
-                    </x-nav-link>
-                </div>
-            </div>
-
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                @auth
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button
-                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name ?? 'Utilisateur' }}</div>
-
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <!-- Profile -->
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
-
-                        <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <x-dropdown-link :href="route('logout')"
-                                onclick="event.preventDefault(); this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
+        <!-- Contenu de la navigation -->
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                @if(Auth::check())
+                    <!-- Liens pour utilisateurs connectés -->
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+                            <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                        </a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('declarations.create') ? 'active' : '' }}" href="{{ route('declarations.create') }}">
+                            <i class="bi bi-list-ul me-1"></i>Signaler un problème
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('declarations.index') ? 'active' : '' }}" href="{{ route('declarations.index') }}">
+                            <i class="bi bi-list-ul me-1"></i>Mes déclarations
+                        </a>
+                    </li>
                 @else
-                <!-- Liens de connexion pour les utilisateurs non authentifiés -->
-                <div class="flex space-x-4">
-                    <x-nav-link :href="route('login')">
-                        {{ __('Se connecter') }}
-                    </x-nav-link>
-                    @if (Route::has('register'))
-                    <x-nav-link :href="route('register')">
-                        {{ __('Créer un compte') }}
-                    </x-nav-link>
-                    @endif
-                </div>
+                    <!-- Liens pour visiteurs -->
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="#accueil">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#a-propos">À propos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#programmes">Domaines</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#impact">Impact</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Ressources
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#admin">Équipe</a></li>
+                            <li><a class="dropdown-item" href="#galerie">Galerie</a></li>
+                        </ul>
+                    </li>
+                @endif
+            </ul>
+
+            <!-- Partie droite de la navigation -->
+            <div class="d-flex align-items-center">
+                @auth
+                    <!-- Menu utilisateur connecté -->
+                    <div class="dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-2"></i>
+                            {{ Auth::user()->name ?? 'Utilisateur' }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{{ route('profile.edit') }}">
+                                    <i class="bi bi-person me-2"></i>Profil
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Déconnexion
+                                    </a>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                @else
+                    <!-- Boutons connexion/inscription -->
+                    <div class="d-flex gap-2">
+                        <a href="{{ route('login') }}" class="btn btn-citinova">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Connexion
+                        </a>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}" class="btn btn-citinova">
+                                <i class="bi bi-person-plus me-2"></i>Inscription
+                            </a>
+                        @endif
+                    </div>
                 @endauth
             </div>
-
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open"
-                    class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex"
-                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden"
-                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
         </div>
-    </div>
-
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-
-            @auth
-            <x-responsive-nav-link :href="route('declarations.create')" :active="request()->routeIs('declarations.create')">
-                {{ __('Déclarer un problème') }}
-            </x-responsive-nav-link>
-
-            <x-responsive-nav-link :href="route('declarations.index')" :active="request()->routeIs('declarations.index')">
-                {{ __('Mes déclarations') }}
-            </x-responsive-nav-link>
-            @endauth
-        </div>
-
-        <!-- Responsive Settings Options -->
-        @auth
-        <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name ?? 'Utilisateur' }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email ?? '' }}</div>
-            </div>
-
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
-
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <x-responsive-nav-link :href="route('logout')"
-                        onclick="event.preventDefault(); this.closest('form').submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </form>
-            </div>
-        </div>
-        @else
-        <!-- Menu mobile pour utilisateurs non connectés -->
-        <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('login')">
-                    {{ __('Se connecter') }}
-                </x-responsive-nav-link>
-                @if (Route::has('register'))
-                <x-responsive-nav-link :href="route('register')">
-                    {{ __('Créer un compte') }}
-                </x-responsive-nav-link>
-                @endif
-            </div>
-        </div>
-        @endauth
     </div>
 </nav>
+
+<!-- Style pour la navigation Bootstrap -->
+<style>
+.navbar {
+    padding: 12px 0;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: var(--primary-color, #1a5276) !important;
+    display: flex;
+    align-items: center;
+}
+
+.nav-link {
+    font-weight: 500;
+    color: var(--text-dark, #1b1b18) !important;
+    padding: 8px 16px !important;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.nav-link:hover {
+    color: var(--primary-color, #1a5276) !important;
+    background-color: rgba(26, 82, 118, 0.05);
+}
+
+.nav-link.active {
+    color: white !important;
+    background: linear-gradient(135deg, var(--primary-color, #1a5276), #144a6d);
+    box-shadow: 0 4px 12px rgba(26, 82, 118, 0.3);
+}
+
+.dropdown-menu {
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 8px;
+}
+
+.dropdown-item {
+    border-radius: 8px;
+    padding: 8px 16px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(26, 82, 118, 0.08);
+    color: var(--primary-color, #1a5276);
+}
+
+.btn-citinova {
+    background: linear-gradient(135deg, var(--primary-color, #1a5276), #144a6d);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(26, 82, 118, 0.3);
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.btn-citinova:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(26, 82, 118, 0.4);
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        border-radius: 0 0 15px 15px;
+        padding: 20px;
+        margin-top: 10px;
+    }
+    
+    .nav-link {
+        padding: 10px 15px !important;
+        border-radius: 10px;
+        margin: 2px 0;
+    }
+    
+    .btn-citinova {
+        margin-top: 10px;
+        justify-content: center;
+    }
+    
+    .d-flex.gap-2 {
+        flex-direction: column;
+    }
+}
+
+/* Styles pour le logo */
+.logo-img {
+    transition: transform 0.3s ease;
+}
+
+.logo-img:hover {
+    transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .navbar-brand img {
+        height: 35px !important;
+    }
+}
+</style>

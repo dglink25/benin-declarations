@@ -6,8 +6,9 @@ use App\Http\Controllers\DeclarationController;
 use App\Http\Controllers\LocalisationController;
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    $departements = \App\Models\Departement::orderBy('name')->get();
+    return view('welcome', compact('departements'));
+})->name('home');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
