@@ -22,7 +22,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
     :root {
         --primary-color: #1a5276;
@@ -665,6 +666,55 @@
             font-size: 0.9rem;
         }
     }
+
+    /* Ajoutez ces styles pour la carte */
+    #map {
+        height: 300px;
+        width: 100%;
+        border-radius: 10px;
+        margin-top: 15px;
+        z-index: 1;
+    }
+    
+    .leaflet-container {
+        font-family: 'Instrument Sans', sans-serif;
+    }
+    
+    .map-info-card {
+        background: white;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        font-size: 0.9rem;
+    }
+    
+    .map-info-card h6 {
+        margin-bottom: 5px;
+        color: var(--primary-color);
+    }
+    
+    .geolocation-loading {
+        display: none;
+        text-align: center;
+        padding: 10px;
+    }
+    
+    .location-details {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+    }
+    
+    .location-field {
+        margin-bottom: 8px;
+    }
+    
+    .location-field strong {
+        color: var(--primary-color);
+        display: inline-block;
+        width: 100px;
+    }
 </style>
 </head>
 <body>
@@ -954,212 +1004,247 @@
         </div>
     </section>
 
-            <!-- Modal pour signaler un problème - Version Urgence Immédiate uniquement -->
-        <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title" id="reportModalLabel">
-                            <i class="fas fa-exclamation-triangle me-2"></i>Signalement Urgence Immédiate
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
-                        
-                        {{-- Messages de statut --}}
-                        @if (session('success'))
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                <strong>✔ Succès :</strong> {{ session('success') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+         <!-- Modal pour signaler un problème -->
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="reportModalLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Signalement Urgence Immédiate
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+                    
+                    <!-- Messages de statut -->
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <strong>✔ Succès :</strong> {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>⚠ Erreur :</strong> {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <strong>Veuillez corriger les erreurs suivantes :</strong>
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <!-- Formulaire Urgence Immédiate -->
+                    <form action="{{ route('declarations.store') }}" method="POST" enctype="multipart/form-data" id="urgenceForm">
+                        @csrf
+                        <input type="hidden" name="urgence" value="1">
+
+                        <!-- Section Informations Personnelles -->
+                        <div class="card mb-4 border-0 shadow-sm">
+                            <div class="card-header bg-warning text-dark">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-user me-2"></i>Informations Personnelles (Obligatoires)
+                                </h6>
                             </div>
-                        @endif
-
-                        @if (session('error'))
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <strong>⚠ Erreur :</strong> {{ session('error') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        @endif
-
-                        @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <strong>Veuillez corriger les erreurs suivantes :</strong>
-                                <ul class="mb-0">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-
-                        {{-- Formulaire Urgence Immédiate --}}
-                        <form action="{{ route('declarations.store') }}" method="POST" enctype="multipart/form-data" id="urgenceForm">
-                            @csrf
-                            <input type="hidden" name="urgence" value="1">
-
-                            {{-- Section Informations Personnelles --}}
-                            <div class="card mb-4 border-0 shadow-sm">
-                                <div class="card-header bg-warning text-dark">
-                                    <h6 class="mb-0">
-                                        <i class="fas fa-user me-2"></i>Informations Personnelles (Obligatoires)
-                                    </h6>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
+                                        <input type="text" name="nom" id="nom" class="form-control" placeholder="Votre nom complet" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                        <input type="email" name="email" id="email" class="form-control" placeholder="votre@email.com" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="user_telephone" class="form-label">Téléphone</label>
+                                        <input type="tel" name="user_telephone" id="user_telephone" class="form-control" placeholder="Votre numéro de téléphone">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="user_adresse" class="form-label">Adresse</label>
+                                        <input type="text" name="user_adresse" id="user_adresse" class="form-control" placeholder="Votre adresse complète">
+                                    </div>
                                 </div>
-                                <div class="card-body">
+                            </div>
+                        </div>
+
+                        <!-- Section Détails du Problème -->
+                        <div class="card mb-4 border-0 shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>Détails de l'Incident
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <!-- Type de problème -->
+                                <div class="mb-3">
+                                    <label for="problemType" class="form-label">Type de problème <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="problemType" name="problemType" required>
+                                        <option value="">Sélectionnez le type</option>
+                                        <option value="eclairage">Problème d'éclairage public</option>
+                                        <option value="route">Route dégradée</option>
+                                        <option value="autre">Autre problème d'infrastructure</option>
+                                    </select>
+                                </div>
+
+                                <!-- Images -->
+                                <div class="mb-3">
+                                    <label for="images" class="form-label">Photos du problème</label>
+                                    <input type="file" name="images[]" multiple accept="image/*" id="images" 
+                                        class="form-control">
+                                    <div class="form-text">Prenez des photos claires du problème (max 50MB par image)</div>
+                                </div>
+
+                                <!-- Description -->
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description du problème <span class="text-danger">*</span></label>
+                                    <textarea name="description" id="description" rows="4" class="form-control" 
+                                        placeholder="Décrivez précisément le problème, l'emplacement exact et toute information utile..." required></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section Localisation -->
+                        <div class="card mb-4 border-0 shadow-sm">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Localisation du Problème
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <!-- Choix mode localisation -->
+                                <div class="mb-4">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="localisation_option" id="localisation_manuelle" value="manuelle" checked>
+                                        <label class="form-check-label" for="localisation_manuelle">
+                                            Saisir l'adresse manuellement
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="localisation_option" id="localisation_auto" value="auto">
+                                        <label class="form-check-label" for="localisation_auto">
+                                            Utiliser la géolocalisation
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Localisation manuelle -->
+                                <div id="localisationManuelle">
                                     <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
-                                            <input type="text" name="nom" id="nom" class="form-control" placeholder="Votre nom complet" required>
+                                        <div class="col-md-4">
+                                            <label for="departement_id" class="form-label">Département <span class="text-danger">*</span></label>
+                                            <select name="departement_id" id="departement_id" class="form-select" required>
+                                                <option value="">-- Sélectionnez --</option>
+                                                @foreach($departements as $dep)
+                                                    <option value="{{ $dep->id }}">{{ $dep->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
-                                        <div class="col-md-6">
-                                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                                            <input type="email" name="email" id="email" class="form-control" placeholder="votre@email.com" required>
+                                        <div class="col-md-4">
+                                            <label for="commune_id" class="form-label">Commune <span class="text-danger">*</span></label>
+                                            <select name="commune_id" id="commune_id" class="form-select" disabled required>
+                                                <option value="">-- Choisir un département --</option>
+                                            </select>
                                         </div>
-                                        <div class="col-md-6">
-                                            <label for="user_telephone" class="form-label">Téléphone</label>
-                                            <input type="tel" name="user_telephone" id="user_telephone" class="form-control" placeholder="Votre numéro de téléphone">
+                                        <div class="col-md-4">
+                                            <label for="arrondissement_id" class="form-label">Arrondissement</label>
+                                            <select name="arrondissement_id" id="arrondissement_id" class="form-select" disabled>
+                                                <option value="">-- Choisir une commune --</option>
+                                            </select>
                                         </div>
-                                        <div class="col-md-6">
-                                            <label for="user_adresse" class="form-label">Adresse</label>
-                                            <input type="text" name="user_adresse" id="user_adresse" class="form-control" placeholder="Votre adresse complète">
+                                        <div class="col-md-4">
+                                            <input type="text" name="quartier" class="form-control" placeholder="Quartier / Village">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="text" name="rue" class="form-control" placeholder="Rue / Lieu-dit">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="text" name="maison" class="form-control" placeholder="Numéro Maison">
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            {{-- Section Détails du Problème --}}
-                            <div class="card mb-4 border-0 shadow-sm">
-                                <div class="card-header bg-primary text-white">
-                                    <h6 class="mb-0">
-                                        <i class="fas fa-info-circle me-2"></i>Détails de l'Incident
-                                    </h6>
-                                </div>
-                                <div class="card-body">
-                                    {{-- Type de problème --}}
+                                <!-- Localisation automatique -->
+                                <div id="localisationAuto" class="d-none">
                                     <div class="mb-3">
-                                        <label for="problemType" class="form-label">Type de problème <span class="text-danger">*</span></label>
-                                        <select class="form-select" id="problemType" name="problemType" required>
-                                            <option value="">Sélectionnez le type</option>
-                                            <option value="eclairage">Problème d'éclairage public</option>
-                                            <option value="route">Route dégradée</option>
-                                            <option value="autre">Autre problème d'infrastructure</option>
-                                        </select>
+                                        <button type="button" id="btnGeo" class="btn btn-outline-primary">
+                                            <i class="fas fa-location-arrow me-2"></i>Activer la géolocalisation
+                                        </button>
                                     </div>
-
-                                    {{-- Images --}}
-                                    <div class="mb-3">
-                                        <label for="images" class="form-label">Photos du problème</label>
-                                        <input type="file" name="images[]" multiple accept="image/*" id="images" 
-                                            class="form-control">
-                                        <div class="form-text">Prenez des photos claires du problème (max 50MB par image)</div>
-                                    </div>
-
-                                    {{-- Description --}}
-                                    <div class="mb-3">
-                                        <label for="description" class="form-label">Description du problème <span class="text-danger">*</span></label>
-                                        <textarea name="description" id="description" rows="4" class="form-control" 
-                                            placeholder="Décrivez précisément le problème, l'emplacement exact et toute information utile..." required></textarea>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- Section Localisation --}}
-                            <div class="card mb-4 border-0 shadow-sm">
-                                <div class="card-header bg-success text-white">
-                                    <h6 class="mb-0">
-                                        <i class="fas fa-map-marker-alt me-2"></i>Localisation du Problème
-                                    </h6>
-                                </div>
-                                <div class="card-body">
-                                    {{-- Choix mode localisation --}}
-                                    <div class="mb-4">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="localisation_option" id="localisation_manuelle" value="manuelle" checked>
-                                            <label class="form-check-label" for="localisation_manuelle">
-                                                Saisir l'adresse manuellement
-                                            </label>
+                                    
+                                    <!-- Indicateur de chargement -->
+                                    <div id="geoLoading" class="geolocation-loading">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Chargement...</span>
                                         </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="localisation_option" id="localisation_auto" value="auto">
-                                            <label class="form-check-label" for="localisation_auto">
-                                                Utiliser la géolocalisation
-                                            </label>
-                                        </div>
+                                        <p class="mt-2">Détection de votre position en cours...</p>
                                     </div>
 
-                                    {{-- Localisation manuelle --}}
-                                    <div id="localisationManuelle">
-                                        <div class="row g-3">
-                                            <div class="col-md-4">
-                                                <label for="departement_id" class="form-label">Département <span class="text-danger">*</span></label>
-                                                <select name="departement_id" id="departement_id" class="form-select" required>
-                                                    <option value="">-- Sélectionnez --</option>
-                                                    @foreach($departements as $dep)
-                                                        <option value="{{ $dep->id }}">{{ $dep->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label for="commune_id" class="form-label">Commune <span class="text-danger">*</span></label>
-                                                <select name="commune_id" id="commune_id" class="form-select" disabled required>
-                                                    <option value="">-- Choisir un département --</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label for="arrondissement_id" class="form-label">Arrondissement</label>
-                                                <select name="arrondissement_id" id="arrondissement_id" class="form-select" disabled>
-                                                    <option value="">-- Choisir une commune --</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <input type="text" name="quartier" class="form-control" placeholder="Quartier / Village">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <input type="text" name="rue" class="form-control" placeholder="Rue / Lieu-dit">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <input type="text" name="maison" class="form-control" placeholder="Numéro Maison">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- Localisation automatique --}}
-                                    <div id="localisationAuto" class="d-none">
-                                        <div class="mb-3">
-                                            <button type="button" id="btnGeo" class="btn btn-outline-primary">
-                                                <i class="fas fa-location-arrow me-2"></i>Activer la géolocalisation
-                                            </button>
-                                        </div>
+                                    <!-- Carte interactive -->
+                                    <div id="mapContainer" class="d-none">
+                                        <h6 class="mb-2">Votre position détectée :</h6>
+                                        <div id="map"></div>
                                         
-                                        <div class="row g-3">
-                                            <div class="col-md-6">
-                                                <label for="latitude" class="form-label">Latitude</label>
-                                                <input type="text" name="latitude" id="latitude" class="form-control" readonly>
+                                        <!-- Informations détaillées de localisation -->
+                                        <div id="locationDetails" class="location-details mt-3">
+                                            <h6>Informations de localisation :</h6>
+                                            <div class="location-field">
+                                                <strong>Adresse :</strong> <span id="detectedAddress">En cours de détection...</span>
                                             </div>
-                                            <div class="col-md-6">
-                                                <label for="longitude" class="form-label">Longitude</label>
-                                                <input type="text" name="longitude" id="longitude" class="form-control" readonly>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="location-field">
+                                                        <strong>Latitude :</strong> <span id="displayLatitude"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="location-field">
+                                                        <strong>Longitude :</strong> <span id="displayLongitude"></span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        
-                                        <div id="geoInfo" class="mt-3 p-3 bg-light rounded d-none">
-                                            <h6>Informations détectées :</h6>
-                                            <div id="detectedAddress" class="text-muted"></div>
+                                            <div class="location-field">
+                                                <strong>Ville :</strong> <span id="detectedCity">-</span>
+                                            </div>
+                                            <div class="location-field">
+                                                <strong>Région :</strong> <span id="detectedRegion">-</span>
+                                            </div>
+                                            <div class="location-field">
+                                                <strong>Pays :</strong> <span id="detectedCountry">-</span>
+                                            </div>
                                         </div>
                                     </div>
+
+                                    <!-- Champs cachés pour le formulaire -->
+                                    <input type="hidden" name="latitude" id="latitude">
+                                    <input type="hidden" name="longitude" id="longitude">
+                                    <input type="hidden" name="detected_address" id="detectedAddressInput">
+                                    <input type="hidden" name="detected_city" id="detectedCityInput">
+                                    <input type="hidden" name="detected_region" id="detectedRegionInput">
+                                    <input type="hidden" name="detected_country" id="detectedCountryInput">
                                 </div>
                             </div>
+                        </div>
 
-                            {{-- Bouton de soumission --}}
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-danger btn-lg px-5">
-                                    <i class="fas fa-paper-plane me-2"></i>Envoyer le Signalement Urgent
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                        <!-- Bouton de soumission -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-danger btn-lg px-5">
+                                <i class="fas fa-paper-plane me-2"></i>Envoyer le Signalement Urgent
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+    </div>
 
     <!-- Section Équipe -->
     <section id="admin" class="teachers-section p-5 bg-light">
@@ -1505,6 +1590,255 @@
             }
         });
 
+    </script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+        // Initialisation de la carte
+        let map = null;
+        let marker = null;
+        let watchId = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion de la localisation manuelle/auto
+            const locManuelle = document.getElementById('localisationManuelle');
+            const locAuto = document.getElementById('localisationAuto');
+            const locRadios = document.querySelectorAll('input[name="localisation_option"]');
+            
+            locRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'auto') {
+                        locManuelle.classList.add('d-none');
+                        locAuto.classList.remove('d-none');
+                        // Rendre les champs de localisation manuelle non requis
+                        document.querySelectorAll('#localisationManuelle select, #localisationManuelle input').forEach(field => {
+                            field.required = false;
+                        });
+                    } else {
+                        locManuelle.classList.remove('d-none');
+                        locAuto.classList.add('d-none');
+                        // Rendre les champs requis à nouveau
+                        document.getElementById('departement_id').required = true;
+                        document.getElementById('commune_id').required = true;
+                        // Arrêter le suivi de position si actif
+                        if (watchId) {
+                            navigator.geolocation.clearWatch(watchId);
+                            watchId = null;
+                        }
+                    }
+                });
+            });
+
+            // Initialisation de la carte
+            function initMap(lat, lng) {
+                if (!map) {
+                    map = L.map('map').setView([lat, lng], 16);
+                    
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap contributors'
+                    }).addTo(map);
+                } else {
+                    map.setView([lat, lng], 16);
+                }
+
+                // Supprimer le marqueur existant s'il y en a un
+                if (marker) {
+                    map.removeLayer(marker);
+                }
+
+                // Ajouter un nouveau marqueur
+                marker = L.marker([lat, lng])
+                    .addTo(map)
+                    .bindPopup('Votre position actuelle')
+                    .openPopup();
+
+                // Ajouter un cercle de précision
+                L.circle([lat, lng], {
+                    color: 'blue',
+                    fillColor: '#1a5276',
+                    fillOpacity: 0.1,
+                    radius: 20
+                }).addTo(map);
+            }
+
+            // Géolocalisation avec carte
+            const btnGeo = document.getElementById('btnGeo');
+            if (btnGeo) {
+                btnGeo.addEventListener('click', function() {
+                    if (navigator.geolocation) {
+                        btnGeo.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Détection en cours...';
+                        btnGeo.disabled = true;
+                        document.getElementById('geoLoading').style.display = 'block';
+                        
+                        // Options de géolocalisation
+                        const options = {
+                            enableHighAccuracy: true,
+                            timeout: 10000,
+                            maximumAge: 0
+                        };
+
+                        // Suivi continu de la position
+                        watchId = navigator.geolocation.watchPosition(
+                            function(position) {
+                                const lat = position.coords.latitude;
+                                const lng = position.coords.longitude;
+                                
+                                // Mettre à jour les champs
+                                document.getElementById('latitude').value = lat;
+                                document.getElementById('longitude').value = lng;
+                                document.getElementById('displayLatitude').textContent = lat.toFixed(6);
+                                document.getElementById('displayLongitude').textContent = lng.toFixed(6);
+                                
+                                // Initialiser la carte
+                                initMap(lat, lng);
+                                
+                                // Reverse geocoding pour obtenir l'adresse
+                                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`)
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        const address = data.display_name || 'Adresse non disponible';
+                                        const addressDetails = data.address || {};
+                                        
+                                        // Mettre à jour l'affichage
+                                        document.getElementById('detectedAddress').textContent = address;
+                                        document.getElementById('detectedCity').textContent = addressDetails.city || addressDetails.town || addressDetails.village || '-';
+                                        document.getElementById('detectedRegion').textContent = addressDetails.state || addressDetails.region || '-';
+                                        document.getElementById('detectedCountry').textContent = addressDetails.country || '-';
+                                        
+                                        // Remplir les champs cachés
+                                        document.getElementById('detectedAddressInput').value = address;
+                                        document.getElementById('detectedCityInput').value = addressDetails.city || addressDetails.town || addressDetails.village || '';
+                                        document.getElementById('detectedRegionInput').value = addressDetails.state || addressDetails.region || '';
+                                        document.getElementById('detectedCountryInput').value = addressDetails.country || '';
+                                        
+                                        // Afficher la carte et les informations
+                                        document.getElementById('mapContainer').classList.remove('d-none');
+                                        document.getElementById('geoLoading').style.display = 'none';
+                                        
+                                        btnGeo.innerHTML = '<i class="fas fa-check me-2"></i>Position détectée';
+                                        btnGeo.classList.remove('btn-outline-primary');
+                                        btnGeo.classList.add('btn-success');
+                                    })
+                                    .catch(error => {
+                                        console.error('Erreur géocodage:', error);
+                                        document.getElementById('geoLoading').style.display = 'none';
+                                        btnGeo.innerHTML = '<i class="fas fa-location-arrow me-2"></i>Réessayer la détection';
+                                        btnGeo.disabled = false;
+                                    });
+                                
+                            },
+                            function(error) {
+                                console.error('Erreur géolocalisation:', error);
+                                let errorMessage = 'Impossible d\'obtenir votre position. ';
+                                
+                                switch(error.code) {
+                                    case error.PERMISSION_DENIED:
+                                        errorMessage += 'Vous avez refusé l\'accès à la géolocalisation.';
+                                        break;
+                                    case error.POSITION_UNAVAILABLE:
+                                        errorMessage += 'Les informations de localisation ne sont pas disponibles.';
+                                        break;
+                                    case error.TIMEOUT:
+                                        errorMessage += 'La demande de localisation a expiré.';
+                                        break;
+                                    default:
+                                        errorMessage += 'Une erreur inconnue est survenue.';
+                                        break;
+                                }
+                                
+                                alert(errorMessage);
+                                document.getElementById('geoLoading').style.display = 'none';
+                                btnGeo.innerHTML = '<i class="fas fa-location-arrow me-2"></i>Activer la géolocalisation';
+                                btnGeo.disabled = false;
+                            },
+                            options
+                        );
+                    } else {
+                        alert('La géolocalisation n\'est pas supportée par votre navigateur.');
+                    }
+                });
+            }
+
+            // Gestion des départements/communes/arrondissements (code existant)
+            const departementSelect = document.getElementById('departement_id');
+            const communeSelect = document.getElementById('commune_id');
+            const arrondissementSelect = document.getElementById('arrondissement_id');
+
+            if (departementSelect) {
+                departementSelect.addEventListener('change', function() {
+                    const depId = this.value;
+                    communeSelect.innerHTML = '<option value="">Chargement...</option>';
+                    communeSelect.disabled = true;
+                    arrondissementSelect.innerHTML = '<option value="">-- Choisir une commune --</option>';
+                    arrondissementSelect.disabled = true;
+
+                    if (depId) {
+                        fetch(`/get-communes/${depId}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                communeSelect.innerHTML = '<option value="">-- Sélectionnez une commune --</option>';
+                                data.forEach(c => {
+                                    communeSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+                                });
+                                communeSelect.disabled = false;
+                            });
+                    } else {
+                        communeSelect.innerHTML = '<option value="">-- Choisir un département --</option>';
+                    }
+                });
+            }
+
+            if (communeSelect) {
+                communeSelect.addEventListener('change', function() {
+                    const communeId = this.value;
+                    arrondissementSelect.innerHTML = '<option value="">Chargement...</option>';
+                    arrondissementSelect.disabled = true;
+
+                    if (communeId) {
+                        fetch(`/get-arrondissements/${communeId}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                arrondissementSelect.innerHTML = '<option value="">-- Sélectionnez un arrondissement --</option>';
+                                data.forEach(a => {
+                                    arrondissementSelect.innerHTML += `<option value="${a.id}">${a.name}</option>`;
+                                });
+                                arrondissementSelect.disabled = false;
+                            });
+                    } else {
+                        arrondissementSelect.innerHTML = '<option value="">-- Choisir une commune --</option>';
+                    }
+                });
+            }
+
+            // Message de confirmation pour l'urgence
+            const urgenceForm = document.getElementById('urgenceForm');
+            if (urgenceForm) {
+                urgenceForm.addEventListener('submit', function(e) {
+                    const confirmed = confirm(
+                        "⚠️ SIGNALEMENT URGENT\n\n" +
+                        "Votre déclaration sera traitée en priorité.\n" +
+                        "Assurez-vous que les informations sont exactes.\n\n" +
+                        "Confirmer l'envoi ?"
+                    );
+                    
+                    if (!confirmed) {
+                        e.preventDefault();
+                    }
+                });
+            }
+
+            // Nettoyer le suivi de position quand le modal est fermé
+            const reportModal = document.getElementById('reportModal');
+            if (reportModal) {
+                reportModal.addEventListener('hidden.bs.modal', function() {
+                    if (watchId) {
+                        navigator.geolocation.clearWatch(watchId);
+                        watchId = null;
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
