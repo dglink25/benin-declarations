@@ -673,6 +673,33 @@
         <i class="fas fa-exclamation-triangle me-2"></i>Signaler un problème
     </button>
 
+    {{-- Messages de succès --}}
+        @if (session('success'))
+            <div class="mb-4 p-4 rounded-lg bg-green-100 text-green-700 border border-green-300">
+                <strong></strong> {{ session('success') }}
+            </div>
+        @endif
+
+        {{-- Messages d'erreur généraux --}}
+        @if (session('error'))
+            <div class="mb-4 p-4 rounded-lg bg-red-100 text-red-700 border border-red-300">
+                <strong>⚠ Erreur :</strong> {{ session('error') }}
+            </div>
+        @endif
+
+        {{-- Erreurs de validation (Laravel) --}}
+        @if ($errors->any())
+            <div class="mb-4 p-4 rounded-lg bg-red-50 border border-red-300 text-red-700">
+                <p class="font-semibold mb-2">Veuillez corriger les erreurs suivantes :</p>
+                <ul class="list-disc list-inside space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+
     <!-- Section Hero avec Carrousel -->
     <section id="accueil" class="carousel-section">
         <div id="carouselCitiNova" class="carousel slide" data-bs-ride="carousel" data-bs-interval="6000">

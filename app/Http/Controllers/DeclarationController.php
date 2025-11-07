@@ -135,8 +135,7 @@ class DeclarationController extends Controller{
         /**
          * 🔹 Étape 5 : Retour utilisateur
          */
-        return redirect()
-            ->route('declarations.create')
+        return back()
             ->with('success', 'Déclaration envoyée avec succès ! Merci pour votre signalement.');
 
     } 
