@@ -97,6 +97,10 @@ Route::get('/mes-declarations', [DeclarationController::class, 'mesDeclarations'
     ->name('declarations.mes-declarations')
     ->middleware('auth');
 
+Route::get('/declarations/{id}/details', [DeclarationController::class, 'showDetails'])
+    ->name('declarations.details')
+    ->middleware('auth');
+
 Route::get('/find-arrondissement', function (Request $request) {
     $name = $request->query('name');
     $communeId = $request->query('commune_id');

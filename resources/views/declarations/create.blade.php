@@ -34,7 +34,7 @@
         {{-- Messages de succès --}}
         @if (session('success'))
             <div class="mb-4 p-4 rounded-lg bg-green-100 text-green-700 border border-green-300">
-                <strong>✔ Succès :</strong> {{ session('success') }}
+                <strong>Succès :</strong> {{ session('success') }}
             </div>
         @endif
 

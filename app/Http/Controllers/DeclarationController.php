@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use Illuminate\Support\Str;
 
+use App\Models\Commune;
+use App\Models\Arrondissement;
+
+
 
 
 class DeclarationController extends Controller{
@@ -202,35 +206,35 @@ class DeclarationController extends Controller{
     }
 
     /**
-     * Valide la cohérence des données de localisation
+     * Valide la cohérence des données de localisation (version simplifiée)
      */
     private function validateLocationConsistency(array $localisationData): void{
-        // Vérifier que si une commune est spécifiée, elle appartient bien au département
+        // Cette version ne bloque pas l'enregistrement en cas d'incohérence
+        // Elle se contente de logger les problèmes
+        
         if (!empty($localisationData['commune_id']) && !empty($localisationData['departement_id'])) {
             $commune = \App\Models\Commune::find($localisationData['commune_id']);
             if ($commune && $commune->departement_id != $localisationData['departement_id']) {
-                throw new \Exception('La commune sélectionnée n\'appartient pas au département spécifié.');
+                Log::warning('Incohérence département/commune', [
+                    'commune_id' => $localisationData['commune_id'],
+                    'departement_soumis' => $localisationData['departement_id'],
+                    'departement_reel' => $commune->departement_id
+                ]);
             }
         }
 
-        // Vérifier que si un arrondissement est spécifié, il appartient bien à la commune
         if (!empty($localisationData['arrondissement_id']) && !empty($localisationData['commune_id'])) {
             $arrondissement = \App\Models\Arrondissement::find($localisationData['arrondissement_id']);
             if ($arrondissement && $arrondissement->commune_id != $localisationData['commune_id']) {
-                throw new \Exception('L\'arrondissement sélectionné n\'appartient pas à la commune spécifiée.');
+                Log::warning('Incohérence commune/arrondissement', [
+                    'arrondissement_id' => $localisationData['arrondissement_id'],
+                    'commune_soumise' => $localisationData['commune_id'],
+                    'commune_reelle' => $arrondissement->commune_id
+                ]);
             }
         }
     }
 
-
-    /**
-     * Enregistre une nouvelle déclaration (urgence ou avec suivi).
-     */
-   
-
-    /**
-     * Affiche la liste des déclarations de l'utilisateur connecté.
-     */
     public function index(){
         if (!Auth::check()) {
             return redirect()->route('login')
@@ -252,204 +256,272 @@ class DeclarationController extends Controller{
                 return view('declarations.index', compact('declarations'));
             }
 
+    // ... vos autres méthodes existantes ...
+
+    public function mesDeclarations()
+    {
+        try {
+            $user = Auth::user();
+
+            if (!$user) {
+                return redirect()->route('login')->with('error', 'Veuillez vous connecter pour accéder à vos déclarations.');
+            }
+
+            // 🔹 Récupération des déclarations avec relations
+            $declarations = Declaration::with([
+                    'departement',
+                    'commune',
+                    'arrondissement',
+                    'media',
+                    'user'
+                ])
+                ->where('user_id', $user->id)
+                ->orderByDesc('created_at')
+                ->get();
+
+            // 🔹 Analyse des descriptions pour détecter les problèmes d'infrastructure
+            $declarations = $declarations->map(function ($declaration) {
+                $declaration->is_occident_related = $this->analyzeOccidentRelation($declaration->description);
+                $declaration->problem_type = $this->categorizeProblem($declaration->description);
+                $declaration->infrastructure_type = $this->getInfrastructureType($declaration->description);
+                return $declaration;
+            });
+
+            // 🔹 Récupération des déclarations d'infrastructure proches
+            $nearbyInfrastructureDeclarations = $this->getNearbyInfrastructureDeclarations($user);
+
+            // 🔹 Préparation des données pour la carte
+            $declarationsMap = $declarations->map(function ($declaration) {
+                return [
+                    'id' => $declaration->id,
+                    'latitude' => $declaration->latitude,
+                    'longitude' => $declaration->longitude,
+                    'description' => Str::limit($declaration->description ?? '', 100),
+                    'statut' => $declaration->statut ?? 'En attente',
+                    'created_at' => optional($declaration->created_at)->format('d/m/Y H:i'),
+                    'departement' => $declaration->departement?->name,
+                    'commune' => $declaration->commune?->name,
+                    'arrondissement' => $declaration->arrondissement?->name,
+                    'urgence' => $declaration->urgence,
+                    'has_images' => $declaration->media->where('type', 'image')->isNotEmpty(),
+                    'has_videos' => $declaration->media->where('type', 'video')->isNotEmpty(),
+                    'is_occident_related' => $declaration->is_occident_related,
+                    'problem_type' => $declaration->problem_type,
+                    'infrastructure_type' => $declaration->infrastructure_type,
+                    'type' => 'own',
+                    'user_name' => $declaration->user->name ?? 'Vous'
+                ];
+            });
+
+            // 🔹 Ajout des déclarations d'infrastructure proches
+            $nearbyDeclarationsMap = $nearbyInfrastructureDeclarations->map(function ($declaration) {
+                return [
+                    'id' => $declaration->id,
+                    'latitude' => $declaration->latitude,
+                    'longitude' => $declaration->longitude,
+                    'description' => Str::limit($declaration->description ?? '', 100),
+                    'statut' => $declaration->statut ?? 'En attente',
+                    'created_at' => optional($declaration->created_at)->format('d/m/Y H:i'),
+                    'departement' => $declaration->departement?->name,
+                    'commune' => $declaration->commune?->name,
+                    'urgence' => $declaration->urgence,
+                    'has_images' => $declaration->media->where('type', 'image')->isNotEmpty(),
+                    'problem_type' => $declaration->problem_type ?? 'autre',
+                    'infrastructure_type' => $declaration->infrastructure_type ?? 'autre',
+                    'user_name' => $declaration->user->name ?? 'Anonyme',
+                    'type' => 'nearby'
+                ];
+            });
+
+            $allDeclarationsMap = $declarationsMap->merge($nearbyDeclarationsMap);
+
+            // 🔹 Récupération des limites géographiques du Bénin
+            $beninBounds = $this->getBeninBounds();
             
-            public function mesDeclarations()
-        {
-            try {
-                $user = Auth::user();
+            return view('declarations.mes-declarations', compact(
+                'declarations', 
+                'allDeclarationsMap',
+                'nearbyInfrastructureDeclarations',
+                'beninBounds'
+            ));
+        } 
+        catch (\Throwable $e) {
+            Log::error('Erreur lors de la récupération des déclarations : ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
 
-                if (!$user) {
-                    return redirect()->route('login')->with('error', 'Veuillez vous connecter pour accéder à vos déclarations.');
+            return redirect()->back()->with('error', 'Erreur lors du chargement de vos déclarations. Veuillez réessayer.');
+        }
+    }
+
+    /**
+     * Analyse si la description est liée à l'occident
+     */
+    private function analyzeOccidentRelation($description)
+    {
+        if (!$description) return false;
+
+        $occidentKeywords = [
+            'occident', 'occidental', 'europée', 'européen', 'européenne', 'amérique', 'américain',
+            'france', 'français', 'allemagne', 'anglais', 'espagne', 'italie', 'usa', 'états-unis',
+            'canada', 'belgique', 'suisse', 'union européenne', 'ue', 'otan', 'nato', 'west', 'western',
+            'colonial', 'colonisation', 'coopération', 'développement', 'aide internationale',
+            'ong occidentale', 'expert étranger', 'coopérant', 'volontaire international'
+        ];
+
+        $description = mb_strtolower($description);
+        
+        foreach ($occidentKeywords as $keyword) {
+            if (str_contains($description, $keyword)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Catégorise le type de problème
+     */
+    private function categorizeProblem($description)
+    {
+        if (!$description) return 'non spécifié';
+
+        $description = mb_strtolower($description);
+        
+        $categories = [
+            'infrastructure' => ['route', 'pont', 'école', 'hôpital', 'bâtiment', 'construction', 'travaux', 'panne electrique'],
+            'environnement' => ['déchet', 'pollution', 'eau', 'air', 'sol', 'déforestation', 'écologie'],
+            'santé' => ['maladie', 'médecin', 'médicament', 'hôpital', 'soin', 'vaccin', 'épidémie'],
+            'éducation' => ['école', 'professeur', 'élève', 'cours', 'formation', 'alphabétisation'],
+            'sécurité' => ['police', 'vol', 'agression', 'accident', 'incendie', 'urgence'],
+            'social' => ['pauvreté', 'chômage', 'logement', 'aide', 'solidarité', 'communauté']
+        ];
+
+        foreach ($categories as $category => $keywords) {
+            foreach ($keywords as $keyword) {
+                if (str_contains($description, $keyword)) {
+                    return $category;
                 }
+            }
+        }
 
-                // 🔹 Récupération des déclarations avec relations
-                $declarations = Declaration::with([
-                        'departement',
-                        'commune',
-                        'arrondissement',
-                        'media',
-                        'user'
-                    ])
-                    ->where('user_id', $user->id)
-                    ->orderByDesc('created_at')
-                    ->get();
+        return 'autre';
+    }
 
-                // 🔹 Analyse des descriptions pour détecter les problèmes liés à l'occident
-                $declarations = $declarations->map(function ($declaration) {
+    /**
+     * Détermine le type d'infrastructure
+     */
+    private function getInfrastructureType($description){
+        if (!$description) return 'autre';
+
+        $description = mb_strtolower($description);
+        
+        $infrastructureTypes = [
+            'route' => ['route', 'chemin', 'piste', 'voie', 'chaussée', 'bitume', 'asphalte', 'nid de poule'],
+            'pont' => ['pont', 'passerelle', 'viaduc', 'ouvrage d\'art'],
+            'école' => ['école', 'collège', 'lycée', 'université', 'salle de classe', 'établissement scolaire'],
+            'hôpital' => ['hôpital', 'clinique', 'dispensaire', 'centre de santé', 'infirmerie'],
+            'bâtiment' => ['bâtiment', 'immeuble', 'construction', 'édifice', 'structure'],
+            'travaux' => ['travaux', 'chantier', 'construction', 'réhabilitation', 'réparation'],
+            'panne électrique' => ['panne électrique', 'courant', 'électricité', 'transformateur', 'ligne électrique', 'black-out']
+        ];
+
+        foreach ($infrastructureTypes as $type => $keywords) {
+            foreach ($keywords as $keyword) {
+                if (str_contains($description, $keyword)) {
+                    return $type;
+                }
+            }
+        }
+
+        return 'autre';
+    }
+
+    /**
+     * Récupère les déclarations d'infrastructure proches
+     */
+    private function getNearbyInfrastructureDeclarations($user)
+    {
+        try {
+            // Position centrale du Bénin
+            $beninLatitude = 9.3077;
+            $beninLongitude = 2.3158;
+            
+            // Rayon de recherche en kilomètres (couvrant tout le Bénin)
+            $radius = 300;
+
+            return Declaration::with(['departement', 'commune', 'media', 'user'])
+                ->where('user_id', '!=', $user->id)
+                ->whereNotNull('latitude')
+                ->whereNotNull('longitude')
+                ->whereRaw("
+                    (6371 * acos(cos(radians(?)) * cos(radians(latitude)) * 
+                    cos(radians(longitude) - radians(?)) + sin(radians(?)) * 
+                    sin(radians(latitude)))) < ?
+                ", [$beninLatitude, $beninLongitude, $beninLatitude, $radius])
+                ->orderByDesc('created_at')
+                ->limit(50)
+                ->get()
+                ->map(function ($declaration) {
                     $declaration->is_occident_related = $this->analyzeOccidentRelation($declaration->description);
                     $declaration->problem_type = $this->categorizeProblem($declaration->description);
+                    $declaration->infrastructure_type = $this->getInfrastructureType($declaration->description);
                     return $declaration;
+                })
+                ->filter(function ($declaration) {
+                    // Filtrer uniquement les problèmes d'infrastructure
+                    return $declaration->problem_type === 'infrastructure';
                 });
 
-                // 🔹 Récupération des déclarations proches (dans un rayon de 50km)
-                $nearbyDeclarations = $this->getNearbyDeclarations($user);
-
-                // 🔹 Préparation des données pour affichage sur la carte
-                $declarationsMap = $declarations->map(function ($declaration) {
-                    return [
-                        'id' => $declaration->id,
-                        'latitude' => $declaration->latitude,
-                        'longitude' => $declaration->longitude,
-                        'description' => Str::limit($declaration->description ?? '', 100),
-                        'statut' => $declaration->statut ?? 'En attente',
-                        'created_at' => optional($declaration->created_at)->format('d/m/Y H:i'),
-                        'departement' => $declaration->departement?->name,
-                        'commune' => $declaration->commune?->name,
-                        'arrondissement' => $declaration->arrondissement?->name,
-                        'urgence' => $declaration->urgence,
-                        'has_images' => $declaration->media->where('type', 'image')->isNotEmpty(),
-                        'has_videos' => $declaration->media->where('type', 'video')->isNotEmpty(),
-                        'is_occident_related' => $declaration->is_occident_related,
-                        'problem_type' => $declaration->problem_type,
-                        'type' => 'own' // Pour différencier ses propres déclarations
-                    ];
-                });
-
-                // 🔹 Ajout des déclarations proches à la carte
-                $nearbyDeclarationsMap = $nearbyDeclarations->map(function ($declaration) {
-                    return [
-                        'id' => $declaration->id,
-                        'latitude' => $declaration->latitude,
-                        'longitude' => $declaration->longitude,
-                        'description' => Str::limit($declaration->description ?? '', 100),
-                        'statut' => $declaration->statut ?? 'En attente',
-                        'created_at' => optional($declaration->created_at)->format('d/m/Y H:i'),
-                        'departement' => $declaration->departement?->name,
-                        'commune' => $declaration->commune?->name,
-                        'urgence' => $declaration->urgence,
-                        'has_images' => $declaration->media->where('type', 'image')->isNotEmpty(),
-                        'is_occident_related' => $declaration->is_occident_related ?? false,
-                        'problem_type' => $declaration->problem_type ?? 'autre',
-                        'user_name' => $declaration->user->name ?? 'Anonyme',
-                        'type' => 'nearby' // Pour les déclarations proches
-                    ];
-                });
-
-                $allDeclarationsMap = $declarationsMap->merge($nearbyDeclarationsMap);
-
-                return view('declarations.mes-declarations', compact(
-                    'declarations', 
-                    'allDeclarationsMap',
-                    'nearbyDeclarations'
-                ));
-            } 
-            catch (\Throwable $e) {
-                Log::error('Erreur lors de la récupération des déclarations : ' . $e->getMessage(), [
-                    'trace' => $e->getTraceAsString(),
-                ]);
-
-                return redirect()->back()->with('error', 'Erreur lors du chargement de vos déclarations. Veuillez réessayer.');
-            }
+        } 
+        catch (\Exception $e) {
+            Log::error('Erreur récupération déclarations infrastructure proches: ' . $e->getMessage());
+            return collect();
         }
-
-        /**
-         * Analyse si la description est liée à l'occident
-         */
-        private function analyzeOccidentRelation($description)
-        {
-            if (!$description) return false;
-
-            $occidentKeywords = [
-                'occident', 'occidental', 'europée', 'européen', 'européenne', 'amérique', 'américain',
-                'france', 'français', 'allemagne', 'anglais', 'espagne', 'italie', 'usa', 'états-unis',
-                'canada', 'belgique', 'suisse', 'union européenne', 'ue', 'otan', 'nato', 'west', 'western',
-                'colonial', 'colonisation', 'coopération', 'développement', 'aide internationale',
-                'ong occidentale', 'expert étranger', 'coopérant', 'volontaire international'
-            ];
-
-            $description = mb_strtolower($description);
-            
-            foreach ($occidentKeywords as $keyword) {
-                if (str_contains($description, $keyword)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /**
-         * Catégorise le type de problème
-         */
-        private function categorizeProblem($description)
-        {
-            if (!$description) return 'non spécifié';
-
-            $description = mb_strtolower($description);
-            
-            $categories = [
-                'infrastructure' => ['route', 'pont', 'école', 'hôpital', 'bâtiment', 'construction', 'travaux'],
-                'environnement' => ['déchet', 'pollution', 'eau', 'air', 'sol', 'déforestation', 'écologie'],
-                'santé' => ['maladie', 'médecin', 'médicament', 'hôpital', 'soin', 'vaccin', 'épidémie'],
-                'éducation' => ['école', 'professeur', 'élève', 'cours', 'formation', 'alphabétisation'],
-                'sécurité' => ['police', 'vol', 'agression', 'accident', 'incendie', 'urgence'],
-                'social' => ['pauvreté', 'chômage', 'logement', 'aide', 'solidarité', 'communauté']
-            ];
-
-            foreach ($categories as $category => $keywords) {
-                foreach ($keywords as $keyword) {
-                    if (str_contains($description, $keyword)) {
-                        return $category;
-                    }
-                }
-            }
-
-            return 'autre';
-        }
-
-        /**
-         * Récupère les déclarations proches de l'utilisateur
-         */
-        private function getNearbyDeclarations($user)
-        {
-            try {
-                // Pour cet exemple, on utilise une position par défaut
-                // En production, vous utiliserez la géolocalisation de l'utilisateur
-                $defaultLatitude = 8.5; // Position par défaut (Togo)
-                $defaultLongitude = 1.0;
-                
-                // Rayon de recherche en kilomètres
-                $radius = 50;
-
-                return Declaration::with(['departement', 'commune', 'media', 'user'])
-                    ->where('user_id', '!=', $user->id) // Exclure ses propres déclarations
-                    ->whereNotNull('latitude')
-                    ->whereNotNull('longitude')
-                    ->whereRaw("
-                        (6371 * acos(cos(radians(?)) * cos(radians(latitude)) * 
-                        cos(radians(longitude) - radians(?)) + sin(radians(?)) * 
-                        sin(radians(latitude)))) < ?
-                    ", [$defaultLatitude, $defaultLongitude, $defaultLatitude, $radius])
-                    ->orderByDesc('created_at')
-                    ->limit(20) // Limiter le nombre de résultats
-                    ->get()
-                    ->map(function ($declaration) {
-                        $declaration->is_occident_related = $this->analyzeOccidentRelation($declaration->description);
-                        $declaration->problem_type = $this->categorizeProblem($declaration->description);
-                        return $declaration;
-                    });
-
-            } catch (\Exception $e) {
-                Log::error('Erreur récupération déclarations proches: ' . $e->getMessage());
-                return collect();
-            }
-        }
-
-    public function showDetails($id) {
-        $declaration = Declaration::with([
-            'departement',
-            'commune',
-            'arrondissement', 
-            'media',
-            'user'
-        ])->findOrFail($id);
-
-        // Vérifier que l'utilisateur peut voir cette déclaration
-        if ($declaration->user_id !== Auth::id()) {
-            abort(403);
-        }
-
-        return view('declarations.partials.details', compact('declaration'));
     }
+
+    /**
+     * Retourne les limites géographiques du Bénin
+     */
+    private function getBeninBounds()
+    {
+        // Limites géographiques du Bénin
+        return [
+            'north' => 12.4165,
+            'south' => 6.2257,
+            'east' => 3.8517,
+            'west' => 0.7746,
+            'center' => [9.3077, 2.3158]
+        ];
+    }
+
+    /**
+     * Affiche les détails d'une déclaration
+     */
+    public function showDetails($id)
+    {
+        try {
+            $declaration = Declaration::with([
+                'departement',
+                'commune',
+                'arrondissement', 
+                'media',
+                'user'
+            ])->findOrFail($id);
+
+            // Vérifier que l'utilisateur peut voir cette déclaration
+            if ($declaration->user_id !== Auth::id()) {
+                abort(403, 'Accès non autorisé à cette déclaration.');
+            }
+
+            return view('declarations.partials.details', compact('declaration'));
+            
+        } catch (\Exception $e) {
+            Log::error('Erreur affichage détails déclaration: ' . $e->getMessage());
+            return response()->json(['error' => 'Déclaration non trouvée'], 404);
+        }
+    }
+
 
 }
