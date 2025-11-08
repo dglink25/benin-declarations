@@ -1,9 +1,8 @@
-
 @include('layouts.navigation')
 
 @php
     $departements = $departements ?? \App\Models\Departement::orderBy('name')->get();
-@endphp <!-- Inclure la navigation Laravel -->
+@endphp
 
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -594,6 +593,259 @@
         box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
     }
     
+    /* Styles pour le nouveau formulaire simplifié */
+    .form-simplified {
+        max-width: 100%;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-header-simple {
+        background: linear-gradient(135deg, var(--primary-color), #144a6d);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .form-header-simple::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: pulse 8s infinite linear;
+    }
+    
+    @keyframes pulse {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .form-body-simple {
+        padding: 2.5rem;
+    }
+    
+    .form-step {
+        display: none;
+        animation: fadeInUp 0.6s ease;
+    }
+    
+    .form-step.active {
+        display: block;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .input-group-simple {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+    
+    .input-group-simple label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        font-size: 1rem;
+    }
+    
+    .input-field {
+        width: 100%;
+        padding: 15px 20px;
+        border: 2px solid #e1e5e9;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+    
+    .input-field:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        background: white;
+        box-shadow: 0 0 0 3px rgba(26, 82, 118, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .camera-section {
+        text-align: center;
+        padding: 2rem;
+        border: 3px dashed #e1e5e9;
+        border-radius: 15px;
+        margin: 2rem 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        background: #f8f9fa;
+    }
+    
+    .camera-section:hover {
+        border-color: var(--primary-color);
+        background: rgba(26, 82, 118, 0.02);
+        transform: translateY(-5px);
+    }
+    
+    .camera-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        display: block;
+    }
+    
+    .media-preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 1rem;
+        justify-content: center;
+    }
+    
+    .media-item {
+        width: 120px;
+        height: 120px;
+        border-radius: 10px;
+        object-fit: cover;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .media-item:hover {
+        transform: scale(1.05);
+    }
+    
+    .location-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background: rgba(40, 167, 69, 0.1);
+        border-radius: 10px;
+        margin: 1rem 0;
+        color: var(--secondary-color);
+        font-weight: 600;
+        animation: pulseSuccess 2s infinite;
+    }
+    
+    @keyframes pulseSuccess {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+    
+    .location-indicator.error {
+        background: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+        animation: pulseError 2s infinite;
+    }
+    
+    @keyframes pulseError {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+    
+    .btn-simple {
+        padding: 15px 30px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        border: none;
+        transition: all 0.3s ease;
+        display: block;
+        width: 100%;
+        margin-top: 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-simple::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.5s;
+    }
+    
+    .btn-simple:hover::before {
+        left: 100%;
+    }
+    
+    .btn-primary-simple {
+        background: linear-gradient(135deg, var(--primary-color), #144a6d);
+        color: white;
+        box-shadow: 0 5px 20px rgba(26, 82, 118, 0.3);
+    }
+    
+    .btn-primary-simple:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(26, 82, 118, 0.4);
+    }
+    
+    .btn-success-simple {
+        background: linear-gradient(135deg, var(--secondary-color), #219a52);
+        color: white;
+        box-shadow: 0 5px 20px rgba(40, 167, 69, 0.3);
+    }
+    
+    .btn-success-simple:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+    }
+    
+    .progress-indicator {
+        display: flex;
+        justify-content: center;
+        margin: 2rem 0;
+    }
+    
+    .progress-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #e1e5e9;
+        margin: 0 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .progress-dot.active {
+        background: var(--primary-color);
+        transform: scale(1.3);
+    }
+    
+    .success-animation {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+    
+    .success-icon {
+        font-size: 4rem;
+        color: var(--secondary-color);
+        margin-bottom: 1.5rem;
+        animation: bounceIn 1s ease;
+    }
+    
+    @keyframes bounceIn {
+        0% { transform: scale(0); opacity: 0; }
+        60% { transform: scale(1.2); opacity: 1; }
+        100% { transform: scale(1); }
+    }
+    
     /* Responsive */
     @media (max-width: 768px) {
         .text-wrapper h2 {
@@ -653,6 +905,14 @@
             margin-top: 10px;
             justify-content: center;
         }
+        
+        .form-body-simple {
+            padding: 1.5rem;
+        }
+        
+        .form-header-simple {
+            padding: 1.5rem;
+        }
     }
     
     @media (max-width: 576px) {
@@ -664,6 +924,15 @@
             padding: 8px 16px;
             font-size: 0.9rem;
         }
+        
+        .camera-section {
+            padding: 1.5rem;
+        }
+        
+        .media-item {
+            width: 100px;
+            height: 100px;
+        }
     }
 </style>
 </head>
@@ -674,31 +943,30 @@
     </button>
 
     {{-- Messages de succès --}}
-        @if (session('success'))
-            <div class="mb-4 p-4 rounded-lg bg-green-100 text-green-700 border border-green-300">
-                <strong></strong> {{ session('success') }}
-            </div>
-        @endif
+    @if (session('success'))
+        <div class="mb-4 p-4 rounded-lg bg-green-100 text-green-700 border border-green-300">
+            <strong></strong> {{ session('success') }}
+        </div>
+    @endif
 
-        {{-- Messages d'erreur généraux --}}
-        @if (session('error'))
-            <div class="mb-4 p-4 rounded-lg bg-red-100 text-red-700 border border-red-300">
-                <strong>⚠ Erreur :</strong> {{ session('error') }}
-            </div>
-        @endif
+    {{-- Messages d'erreur généraux --}}
+    @if (session('error'))
+        <div class="mb-4 p-4 rounded-lg bg-red-100 text-red-700 border border-red-300">
+            <strong>⚠ Erreur :</strong> {{ session('error') }}
+        </div>
+    @endif
 
-        {{-- Erreurs de validation (Laravel) --}}
-        @if ($errors->any())
-            <div class="mb-4 p-4 rounded-lg bg-red-50 border border-red-300 text-red-700">
-                <p class="font-semibold mb-2">Veuillez corriger les erreurs suivantes :</p>
-                <ul class="list-disc list-inside space-y-1">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
+    {{-- Erreurs de validation (Laravel) --}}
+    @if ($errors->any())
+        <div class="mb-4 p-4 rounded-lg bg-red-50 border border-red-300 text-red-700">
+            <p class="font-semibold mb-2">Veuillez corriger les erreurs suivantes :</p>
+            <ul class="list-disc list-inside space-y-1">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <!-- Section Hero avec Carrousel -->
     <section id="accueil" class="carousel-section">
@@ -954,251 +1222,194 @@
         </div>
     </section>
 
-            <!-- Modal pour signaler un problème - Version Urgence Immédiate uniquement -->
-        <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title" id="reportModalLabel">
-                            <i class="fas fa-exclamation-triangle me-2"></i>Signalement Urgence Immédiate
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+    <!-- Modal pour signaler un problème - Version ultra-simplifiée -->
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content form-simplified">
+                <div class="form-header-simple">
+                    <h3 class="mb-2"><i class="fas fa-exclamation-triangle me-2"></i>Signaler un Problème</h3>
+                    <p class="mb-0">Aidez-nous à améliorer nos infrastructures</p>
+                </div>
+                
+                <div class="form-body-simple">
+                    {{-- Messages de statut --}}
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <strong>✔ Succès :</strong> {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>⚠ Erreur :</strong> {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <strong>Veuillez corriger les erreurs suivantes :</strong>
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <!-- Formulaire simplifié -->
+                    <form action="{{ route('declarations.store') }}" method="POST" enctype="multipart/form-data" id="simpleForm">
+                        @csrf
+                        <input type="hidden" name="urgence" value="1">
                         
-                        {{-- Messages de statut --}}
-                        @if (session('success'))
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                <strong>✔ Succès :</strong> {{ session('success') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <!-- Champs de localisation cachés -->
+                        <input type="hidden" name="latitude" id="latitude">
+                        <input type="hidden" name="longitude" id="longitude">
+                        <input type="hidden" name="address" id="address">
+
+                        <!-- Étape 1: Informations de base -->
+                        <div class="form-step active" id="step1">
+                            <div class="progress-indicator">
+                                <div class="progress-dot active"></div>
+                                <div class="progress-dot"></div>
+                                <div class="progress-dot"></div>
                             </div>
-                        @endif
-
-                        @if (session('error'))
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <strong>⚠ Erreur :</strong> {{ session('error') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            
+                            <h4 class="text-center mb-4" style="color: var(--primary-color);">Quel est le problème ?</h4>
+                            
+                            <!-- Indicateur de localisation -->
+                            <div id="locationStatus" class="location-indicator">
+                                <i class="fas fa-spinner fa-spin me-2"></i>
+                                <span>Localisation en cours...</span>
                             </div>
-                        @endif
-
-                        @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <strong>Veuillez corriger les erreurs suivantes :</strong>
-                                <ul class="mb-0">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
+                            
+                            <div class="input-group-simple">
+                                <label for="simpleName">Votre nom complet</label>
+                                <input type="text" class="input-field" id="simpleName" name="nom" placeholder="Ex: Jean Dupont" required>
                             </div>
-                        @endif
-
-                        {{-- Formulaire Urgence Immédiate --}}
-                        <form action="{{ route('declarations.store') }}" method="POST" enctype="multipart/form-data" id="urgenceForm">
-                            @csrf
-                            <input type="hidden" name="urgence" value="1">
-
-                            {{-- Section Informations Personnelles --}}
-                            <div class="card mb-4 border-0 shadow-sm">
-                                <div class="card-header bg-warning text-dark">
-                                    <h6 class="mb-0">
-                                        <i class="fas fa-user me-2"></i>Informations Personnelles (Obligatoires)
-                                    </h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
-                                            <input type="text" name="nom" id="nom" class="form-control" placeholder="Votre nom complet" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                                            <input type="email" name="email" id="email" class="form-control" placeholder="votre@email.com" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="user_telephone" class="form-label">Téléphone</label>
-                                            <input type="tel" name="user_telephone" id="user_telephone" class="form-control" placeholder="Votre numéro de téléphone">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="user_adresse" class="form-label">Adresse</label>
-                                            <input type="text" name="user_adresse" id="user_adresse" class="form-control" placeholder="Votre adresse complète">
-                                        </div>
-                                    </div>
-                                </div>
+                            
+                            <div class="input-group-simple">
+                                <label for="simplePhone">Votre numéro de téléphone</label>
+                                <input type="tel" class="input-field" id="simplePhone" name="user_telephone" placeholder="Ex: +229 01 23 45 67">
                             </div>
+                            
+                            <button type="button" class="btn btn-primary-simple btn-simple" onclick="showStep(2)">
+                                Continuer <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
 
-                            {{-- Section Détails du Problème --}}
-                            <div class="card mb-4 border-0 shadow-sm">
-                                <div class="card-header bg-primary text-white">
-                                    <h6 class="mb-0">
-                                        <i class="fas fa-info-circle me-2"></i>Détails de l'Incident
-                                    </h6>
-                                </div>
-                                <div class="card-body">
-                                    {{-- Type de problème --}}
-                                    <div class="mb-3">
-                                        <label for="problemType" class="form-label">Type de problème <span class="text-danger">*</span></label>
-                                        <select class="form-select" id="problemType" name="problemType" required>
-                                            <option value="">Sélectionnez le type</option>
-                                            <option value="eclairage">Problème d'éclairage public</option>
-                                            <option value="route">Route dégradée</option>
-                                            <option value="autre">Autre problème d'infrastructure</option>
-                                        </select>
-                                    </div>
-
-                                    {{-- Images --}}
-                                    <div class="mb-3">
-                                        <label for="images" class="form-label">Photos du problème</label>
-                                        <input type="file" name="images[]" multiple accept="image/*" id="images" 
-                                            class="form-control">
-                                        <div class="form-text">Prenez des photos claires du problème (max 50MB par image)</div>
-                                    </div>
-
-                                    {{-- Description --}}
-                                    <div class="mb-3">
-                                        <label for="description" class="form-label">Description du problème <span class="text-danger">*</span></label>
-                                        <textarea name="description" id="description" rows="4" class="form-control" 
-                                            placeholder="Décrivez précisément le problème, l'emplacement exact et toute information utile..." required></textarea>
-                                    </div>
-                                </div>
+                        <!-- Étape 2: Photos et description -->
+                        <div class="form-step" id="step2">
+                            <div class="progress-indicator">
+                                <div class="progress-dot"></div>
+                                <div class="progress-dot active"></div>
+                                <div class="progress-dot"></div>
                             </div>
-
-                            {{-- Section Localisation --}}
-                            <div class="card mb-4 border-0 shadow-sm">
-                                <div class="card-header bg-success text-white">
-                                    <h6 class="mb-0">
-                                        <i class="fas fa-map-marker-alt me-2"></i>Localisation du Problème
-                                    </h6>
-                                </div>
-                                <div class="card-body">
-                                    {{-- Choix mode localisation --}}
-                                    <div class="mb-4">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="localisation_option" id="localisation_manuelle" value="manuelle" checked>
-                                            <label class="form-check-label" for="localisation_manuelle">
-                                                Saisir l'adresse manuellement
-                                            </label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="localisation_option" id="localisation_auto" value="auto">
-                                            <label class="form-check-label" for="localisation_auto">
-                                                Utiliser la géolocalisation
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    {{-- Localisation manuelle --}}
-                                    <div id="localisationManuelle">
-                                        <div class="row g-3">
-                                            <div class="col-md-4">
-                                                <label for="departement_id" class="form-label">Département <span class="text-danger">*</span></label>
-                                                <select name="departement_id" id="departement_id" class="form-select" required>
-                                                    <option value="">-- Sélectionnez --</option>
-                                                    @foreach($departements as $dep)
-                                                        <option value="{{ $dep->id }}">{{ $dep->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label for="commune_id" class="form-label">Commune <span class="text-danger">*</span></label>
-                                                <select name="commune_id" id="commune_id" class="form-select" disabled required>
-                                                    <option value="">-- Choisir un département --</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label for="arrondissement_id" class="form-label">Arrondissement</label>
-                                                <select name="arrondissement_id" id="arrondissement_id" class="form-select" disabled>
-                                                    <option value="">-- Choisir une commune --</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <input type="text" name="quartier" class="form-control" placeholder="Quartier / Village">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <input type="text" name="rue" class="form-control" placeholder="Rue / Lieu-dit">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <input type="text" name="maison" class="form-control" placeholder="Numéro Maison">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- Localisation automatique --}}
-                                    <div id="localisationAuto" class="d-none">
-                                        <div class="mb-3">
-                                            <button type="button" id="btnGeo" class="btn btn-outline-primary">
-                                                <i class="fas fa-location-arrow me-2"></i>Activer la géolocalisation
-                                            </button>
-                                        </div>
-                                        
-                                        <div class="row g-3">
-                                            <div class="col-md-6">
-                                                <label for="latitude" class="form-label">Latitude</label>
-                                                <input type="text" name="latitude" id="latitude" class="form-control" readonly>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label for="longitude" class="form-label">Longitude</label>
-                                                <input type="text" name="longitude" id="longitude" class="form-control" readonly>
-                                            </div>
-                                        </div>
-                                        
-                                        <div id="geoInfo" class="mt-3 p-3 bg-light rounded d-none">
-                                            <h6>Informations détectées :</h6>
-                                            <div id="detectedAddress" class="text-muted"></div>
-                                        </div>
-                                    </div>
-                                </div>
+                            
+                            <h4 class="text-center mb-4" style="color: var(--primary-color);">Ajoutez des photos</h4>
+                            
+                            <div class="camera-section" onclick="document.getElementById('mediaInput').click()">
+                                <i class="fas fa-camera camera-icon"></i>
+                                <h5>Prenez une photo ou une vidéo</h5>
+                                <p class="text-muted">Cliquez ici pour capturer le problème</p>
+                                <input type="file" id="mediaInput" name="images[]" multiple accept="image/*,video/*" capture="camera" class="d-none">
                             </div>
-
-                            {{-- Bouton de soumission --}}
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-danger btn-lg px-5">
-                                    <i class="fas fa-paper-plane me-2"></i>Envoyer le Signalement Urgent
+                            
+                            <div class="media-preview" id="mediaPreview"></div>
+                            
+                            <div class="input-group-simple">
+                                <label for="simpleDescription">Description du problème</label>
+                                <textarea class="input-field" id="simpleDescription" name="description" rows="3" placeholder="Décrivez brièvement le problème..." required></textarea>
+                            </div>
+                            
+                            <div class="d-flex gap-3">
+                                <button type="button" class="btn btn-outline-secondary flex-fill" onclick="showStep(1)">
+                                    <i class="fas fa-arrow-left me-2"></i>Retour
+                                </button>
+                                <button type="button" class="btn btn-primary-simple flex-fill" onclick="showStep(3)">
+                                    Continuer <i class="fas fa-arrow-right ms-2"></i>
                                 </button>
                             </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        </div>
 
-    <!-- Section Équipe -->
-    <section id="admin" class="teachers-section p-5 bg-light">
-    <div class="container-fluid text-center">
-        <p class="who-we text-center">Notre équipe</p>
-        <h2 class="mb-4">L'Équipe CITINOVA</h2>
-        <div class="row g-3 justify-content-center">
-            <div class="col-md-6 col-lg-3">
-                <div class="teacher-card text-center p-2 rounded">
-                    <div class="image">
-                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Directeur Général" class="teacher-img" style="width: 200px; height: 200px; object-fit: cover; border-radius: 50%;">
-                    </div>
-                    <h5 class="teacher-name mt-3">Maurel LOGBO</h5>
-                    <p class="teacher-title">Dev Front-end</p>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="teacher-card text-center p-2 rounded">
-                    <div class="image">
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Responsable Technique" class="teacher-img" style="width: 200px; height: 200px; object-fit: cover; border-radius: 50%;">
-                    </div>
-                    <h5 class="teacher-name mt-3">Daniella AGOUNGNON</h5>
-                    <p class="teacher-title">Géomentienne</p>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="teacher-card text-center p-2 rounded">
-                    <div class="image">
-                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Expert Infrastructure" class="teacher-img" style="width: 200px; height: 200px; object-fit: cover; border-radius: 50%;">
-                    </div>
-                    <h5 class="teacher-name mt-3">Diègue HOUNDOKINNOU</h5>
-                    <p class="teacher-title">Dev Back-end</p>
+                        <!-- Étape 3: Confirmation -->
+                        <div class="form-step" id="step3">
+                            <div class="progress-indicator">
+                                <div class="progress-dot"></div>
+                                <div class="progress-dot"></div>
+                                <div class="progress-dot active"></div>
+                            </div>
+                            
+                            <div class="success-animation">
+                                <i class="fas fa-check-circle success-icon"></i>
+                                <h4 class="mb-3" style="color: var(--primary-color);">Prêt à envoyer !</h4>
+                                <p class="text-muted">Vérifiez que toutes les informations sont correctes</p>
+                            </div>
+                            
+                            <div class="card mb-4" style="border: none; background: #f8f9fa;">
+                                <div class="card-body">
+                                    <h6>Récapitulatif :</h6>
+                                    <p><strong>Nom :</strong> <span id="summaryName"></span></p>
+                                    <p><strong>Téléphone :</strong> <span id="summaryPhone"></span></p>
+                                    <p><strong>Localisation :</strong> <span id="summaryLocation">Détectée automatiquement</span></p>
+                                    <p><strong>Photos :</strong> <span id="summaryPhotos">0</span> ajoutée(s)</p>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex gap-3">
+                                <button type="button" class="btn btn-outline-secondary flex-fill" onclick="showStep(2)">
+                                    <i class="fas fa-arrow-left me-2"></i>Modifier
+                                </button>
+                                <button type="submit" class="btn btn-success-simple flex-fill">
+                                    <i class="fas fa-paper-plane me-2"></i>Envoyer le signalement
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-</section>
+
+    <!-- Section Équipe -->
+    <section id="admin" class="teachers-section p-5 bg-light">
+        <div class="container-fluid text-center">
+            <p class="who-we text-center">Notre équipe</p>
+            <h2 class="mb-4">L'Équipe CITINOVA</h2>
+            <div class="row g-3 justify-content-center">
+                <div class="col-md-6 col-lg-3">
+                    <div class="teacher-card text-center p-2 rounded">
+                        <div class="image">
+                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Directeur Général" class="teacher-img" style="width: 200px; height: 200px; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <h5 class="teacher-name mt-3">Maurel LOGBO</h5>
+                        <p class="teacher-title">Dev Front-end</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="teacher-card text-center p-2 rounded">
+                        <div class="image">
+                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Responsable Technique" class="teacher-img" style="width: 200px; height: 200px; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <h5 class="teacher-name mt-3">Daniella AGOUNGNON</h5>
+                        <p class="teacher-title">Géomentienne</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="teacher-card text-center p-2 rounded">
+                        <div class="image">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Expert Infrastructure" class="teacher-img" style="width: 200px; height: 200px; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <h5 class="teacher-name mt-3">Diègue HOUNDOKINNOU</h5>
+                        <p class="teacher-title">Dev Back-end</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Section Galerie -->
     <section id="galerie">
@@ -1327,17 +1538,30 @@
         </div>
     </footer>
 
-
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Scripts personnalisés -->
     <script>
-        // Script pour la galerie modale
+        // Variables globales
+        let currentStep = 1;
+        let userLocation = null;
+        
+        // Initialisation au chargement
         document.addEventListener('DOMContentLoaded', function() {
+            // Démarrer la géolocalisation automatique
+            getLocation();
+            
+            // Gestion des médias
+            const mediaInput = document.getElementById('mediaInput');
+            const mediaPreview = document.getElementById('mediaPreview');
+            
+            mediaInput.addEventListener('change', function(e) {
+                handleMediaFiles(e.target.files);
+            });
+            
+            // Script pour la galerie modale
             const galleryImages = document.querySelectorAll('.gallery-img');
             const modalImage = document.getElementById('modalImage');
-            const galleryModal = document.getElementById('galleryModal');
             
             galleryImages.forEach(img => {
                 img.addEventListener('click', function() {
@@ -1349,7 +1573,7 @@
             
             // Animation au défilement
             const animateOnScroll = function() {
-                const elements = document.querySelectorAll('.timeline-item, .programme-card, .cours-card, .teacher-card, .history-card');
+                const elements = document.querySelectorAll('.timeline-item, .programme-card, .teacher-card, .impact-card');
                 
                 elements.forEach(element => {
                     const elementTop = element.getBoundingClientRect().top;
@@ -1362,149 +1586,164 @@
             };
             
             window.addEventListener('scroll', animateOnScroll);
-            // Déclencher une fois au chargement
             animateOnScroll();
         });
-
+        
+        // Géolocalisation automatique
+        function getLocation() {
+            const locationStatus = document.getElementById('locationStatus');
             
-        document.addEventListener('DOMContentLoaded', function() {
-            // Gestion de la localisation manuelle/auto
-            const locManuelle = document.getElementById('localisationManuelle');
-            const locAuto = document.getElementById('localisationAuto');
-            const locRadios = document.querySelectorAll('input[name="localisation_option"]');
-            
-            locRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    if (this.value === 'auto') {
-                        locManuelle.classList.add('d-none');
-                        locAuto.classList.remove('d-none');
-                        // Rendre les champs de localisation manuelle non requis
-                        document.querySelectorAll('#localisationManuelle select, #localisationManuelle input').forEach(field => {
-                            field.required = false;
-                        });
-                    } else {
-                        locManuelle.classList.remove('d-none');
-                        locAuto.classList.add('d-none');
-                        // Rendre les champs requis à nouveau
-                        document.getElementById('departement_id').required = true;
-                        document.getElementById('commune_id').required = true;
-                    }
-                });
-            });
-
-            // Géolocalisation
-            const btnGeo = document.getElementById('btnGeo');
-            if (btnGeo) {
-                btnGeo.addEventListener('click', function() {
-                    if (navigator.geolocation) {
-                        btnGeo.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Localisation en cours...';
-                        btnGeo.disabled = true;
+            if (navigator.geolocation) {
+                locationStatus.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Localisation en cours...';
+                
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        // Succès de la géolocalisation
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
                         
-                        navigator.geolocation.getCurrentPosition(function(position) {
-                            const lat = position.coords.latitude;
-                            const lng = position.coords.longitude;
-                            
-                            document.getElementById('latitude').value = lat;
-                            document.getElementById('longitude').value = lng;
-                            
-                            // Reverse geocoding simple
-                            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-                                .then(response => response.json())
-                                .then(data => {
-                                    const address = data.display_name || 'Adresse non disponible';
-                                    document.getElementById('detectedAddress').textContent = address;
-                                    document.getElementById('geoInfo').classList.remove('d-none');
-                                    
-                                    btnGeo.innerHTML = '<i class="fas fa-check me-2"></i>Localisation réussie';
-                                })
-                                .catch(error => {
-                                    console.error('Erreur géocodage:', error);
-                                    btnGeo.innerHTML = '<i class="fas fa-location-arrow me-2"></i>Activer la géolocalisation';
-                                });
-                            
-                            btnGeo.disabled = false;
-                            
-                        }, function(error) {
-                            console.error('Erreur géolocalisation:', error);
-                            alert('Impossible d\'obtenir votre position. Veuillez vérifier les permissions de localisation.');
-                            btnGeo.innerHTML = '<i class="fas fa-location-arrow me-2"></i>Activer la géolocalisation';
-                            btnGeo.disabled = false;
-                        });
-                    } else {
-                        alert('La géolocalisation n\'est pas supportée par votre navigateur.');
+                        // Remplir les champs cachés
+                        document.getElementById('latitude').value = lat;
+                        document.getElementById('longitude').value = lng;
+                        
+                        // Obtenir l'adresse via géocodage inverse
+                        getAddressFromCoordinates(lat, lng);
+                        
+                        locationStatus.innerHTML = '<i class="fas fa-check-circle me-2"></i>Localisation détectée';
+                        locationStatus.classList.remove('error');
+                    },
+                    function(error) {
+                        // Échec de la géolocalisation
+                        console.error('Erreur géolocalisation:', error);
+                        
+                        let errorMessage = 'Impossible de détecter votre position';
+                        if (error.code === error.PERMISSION_DENIED) {
+                            errorMessage = 'Autorisation de localisation refusée';
+                        } else if (error.code === error.POSITION_UNAVAILABLE) {
+                            errorMessage = 'Position indisponible';
+                        } else if (error.code === error.TIMEOUT) {
+                            errorMessage = 'Délai de localisation dépassé';
+                        }
+                        
+                        locationStatus.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>${errorMessage}`;
+                        locationStatus.classList.add('error');
+                        
+                        // Ajouter un bouton pour réessayer
+                        const retryButton = document.createElement('button');
+                        retryButton.className = 'btn btn-sm btn-outline-light ms-2';
+                        retryButton.innerHTML = '<i class="fas fa-redo me-1"></i>Réessayer';
+                        retryButton.onclick = getLocation;
+                        locationStatus.appendChild(retryButton);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 60000
                     }
-                });
+                );
+            } else {
+                locationStatus.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Géolocalisation non supportée';
+                locationStatus.classList.add('error');
             }
-
-            // Gestion des départements/communes/arrondissements
-            const departementSelect = document.getElementById('departement_id');
-            const communeSelect = document.getElementById('commune_id');
-            const arrondissementSelect = document.getElementById('arrondissement_id');
-
-            if (departementSelect) {
-                departementSelect.addEventListener('change', function() {
-                    const depId = this.value;
-                    communeSelect.innerHTML = '<option value="">Chargement...</option>';
-                    communeSelect.disabled = true;
-                    arrondissementSelect.innerHTML = '<option value="">-- Choisir une commune --</option>';
-                    arrondissementSelect.disabled = true;
-
-                    if (depId) {
-                        fetch(`/get-communes/${depId}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                communeSelect.innerHTML = '<option value="">-- Sélectionnez une commune --</option>';
-                                data.forEach(c => {
-                                    communeSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
-                                });
-                                communeSelect.disabled = false;
-                            });
-                    } else {
-                        communeSelect.innerHTML = '<option value="">-- Choisir un département --</option>';
+        }
+        
+        // Géocodage inverse pour obtenir l'adresse
+        function getAddressFromCoordinates(lat, lng) {
+            // Utilisation de l'API Nominatim d'OpenStreetMap (gratuite)
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        document.getElementById('address').value = data.display_name;
                     }
+                })
+                .catch(error => {
+                    console.error('Erreur géocodage:', error);
                 });
+        }
+        
+        // Navigation entre les étapes
+        function showStep(stepNumber) {
+            // Mettre à jour le récapitulatif si on va à l'étape 3
+            if (stepNumber === 3) {
+                updateSummary();
             }
-
-            if (communeSelect) {
-                communeSelect.addEventListener('change', function() {
-                    const communeId = this.value;
-                    arrondissementSelect.innerHTML = '<option value="">Chargement...</option>';
-                    arrondissementSelect.disabled = true;
-
-                    if (communeId) {
-                        fetch(`/get-arrondissements/${communeId}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                arrondissementSelect.innerHTML = '<option value="">-- Sélectionnez un arrondissement --</option>';
-                                data.forEach(a => {
-                                    arrondissementSelect.innerHTML += `<option value="${a.id}">${a.name}</option>`;
-                                });
-                                arrondissementSelect.disabled = false;
-                            });
-                    } else {
-                        arrondissementSelect.innerHTML = '<option value="">-- Choisir une commune --</option>';
-                    }
-                });
-            }
-
-            // Message de confirmation pour l'urgence
-            const urgenceForm = document.getElementById('urgenceForm');
-            if (urgenceForm) {
-                urgenceForm.addEventListener('submit', function(e) {
-                    const confirmed = confirm(
-                        "⚠️ SIGNALEMENT URGENT\n\n" +
-                        "Votre déclaration sera traitée en priorité.\n" +
-                        "Assurez-vous que les informations sont exactes.\n\n" +
-                        "Confirmer l'envoi ?"
-                    );
+            
+            // Masquer toutes les étapes
+            document.querySelectorAll('.form-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Afficher l'étape demandée
+            document.getElementById('step' + stepNumber).classList.add('active');
+            
+            // Mettre à jour l'étape courante
+            currentStep = stepNumber;
+        }
+        
+        // Gestion des fichiers média
+        function handleMediaFiles(files) {
+            const mediaPreview = document.getElementById('mediaPreview');
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const mediaItem = document.createElement(file.type.startsWith('video') ? 'video' : 'img');
+                    mediaItem.src = e.target.result;
+                    mediaItem.className = 'media-item';
+                    mediaItem.controls = file.type.startsWith('video');
                     
-                    if (!confirmed) {
-                        e.preventDefault();
-                    }
-                });
+                    mediaPreview.appendChild(mediaItem);
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // Mettre à jour le récapitulatif
+        function updateSummary() {
+            document.getElementById('summaryName').textContent = document.getElementById('simpleName').value || 'Non renseigné';
+            document.getElementById('summaryPhone').textContent = document.getElementById('simplePhone').value || 'Non renseigné';
+            
+            const mediaCount = document.getElementById('mediaPreview').children.length;
+            document.getElementById('summaryPhotos').textContent = mediaCount;
+            
+            // Afficher l'adresse si disponible
+            const address = document.getElementById('address').value;
+            if (address) {
+                document.getElementById('summaryLocation').textContent = address.length > 50 ? 
+                    address.substring(0, 50) + '...' : address;
+            }
+        }
+        
+        // Validation du formulaire avant envoi
+        document.getElementById('simpleForm').addEventListener('submit', function(e) {
+            const name = document.getElementById('simpleName').value;
+            const description = document.getElementById('simpleDescription').value;
+            
+            if (!name || !description) {
+                e.preventDefault();
+                alert('Veuillez remplir tous les champs obligatoires');
+                showStep(1);
+                return;
+            }
+            
+            // Vérifier si la localisation est disponible
+            const latitude = document.getElementById('latitude').value;
+            if (!latitude) {
+                const confirmSend = confirm(
+                    'Votre position n\'a pas pu être détectée. ' +
+                    'Souhaitez-vous quand même envoyer le signalement ?'
+                );
+                
+                if (!confirmSend) {
+                    e.preventDefault();
+                    showStep(1);
+                }
             }
         });
-
     </script>
 </body>
 </html>
