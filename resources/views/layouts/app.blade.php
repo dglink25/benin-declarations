@@ -218,12 +218,6 @@
                                 <a class="nav-link {{ request()->routeIs('declarations.mes-declarations') ? 'active' : '' }}" href="{{ route('declarations.mes-declarations') }}">
                                     <i class="bi bi-list-ul me-1"></i>Mes déclarations
                                 </a>
-                                        <form method="POST" action="{{ route('logout') }}">
-                                            @csrf
-                                            <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();">
-                                                <i class="bi bi-box-arrow-right me-2"></i>Déconnexion
-                                            </a>
-                                        </form>
                 
                 <!-- Bouton hamburger -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">

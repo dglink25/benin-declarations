@@ -1294,6 +1294,16 @@
                                 <input type="tel" class="input-field" id="simplePhone" name="user_telephone" placeholder="Ex: +229 01 23 45 67">
                             </div>
                             
+                            <div class="input-group-simple">
+                                <label>Type de problème</label>
+                                <select class="input-field" name="problemType" required>
+                                    <option value="">Sélectionnez le type</option>
+                                    <option value="eclairage">Problème d'éclairage public</option>
+                                    <option value="route">Route dégradée</option>
+                                    <option value="autre">Autre problème d'infrastructure</option>
+                                </select>
+                            </div>
+                            
                             <button type="button" class="btn btn-primary-simple btn-simple" onclick="showStep(2)">
                                 Continuer <i class="fas fa-arrow-right ms-2"></i>
                             </button>
